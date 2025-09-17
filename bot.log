@@ -58,3 +58,111 @@
 2025-09-17 15:04:20,572 - aiogram.dispatcher - INFO - Polling stopped
 2025-09-17 15:04:20,827 - __main__ - INFO - Bot shutdown completed
 2025-09-17 15:04:20,828 - __main__ - INFO - Bot shutdown completed
+2025-09-17 15:05:24,428 - __main__ - INFO - Database initialized successfully
+2025-09-17 15:05:25,107 - __main__ - INFO - Bot initialized: @tmkonkursbot
+2025-09-17 15:05:25,110 - __main__ - INFO - Bot components initialized successfully
+2025-09-17 15:05:25,110 - __main__ - INFO - Starting bot polling...
+2025-09-17 15:05:25,110 - aiogram.dispatcher - INFO - Start polling
+2025-09-17 15:05:25,252 - aiogram.dispatcher - INFO - Run polling for bot @tmkonkursbot id=5624896503 - 'konkurs'
+2025-09-17 15:05:31,783 - root - INFO - Found mentions in message: ['tmbekzod']
+2025-09-17 15:05:31,784 - root - INFO - Checking mention @tmbekzod: in_group=False
+2025-09-17 15:05:32,383 - root - INFO - Deleted message from 6747043079 in -1002937503033: @tmbekzod bu guruh a'zosi emas, begona foydalanuvchilarni mention qilish taqiqlanadi
+2025-09-17 15:05:32,383 - aiogram.event - INFO - Update id=181165363 is handled. Duration 1114 ms by bot id=5624896503
+2025-09-17 15:13:22,565 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2025-09-17 15:13:22,570 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 5624896503)
+2025-09-17 15:14:34,566 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2025-09-17 15:14:34,572 - aiogram.dispatcher - WARNING - Sleep for 1.374352 seconds and try again... (tryings = 1, bot id = 5624896503)
+2025-09-17 15:15:13,713 - aiogram.dispatcher - WARNING - Received SIGINT signal
+2025-09-17 15:15:13,716 - aiogram.dispatcher - INFO - Polling stopped for bot @tmkonkursbot id=5624896503 - 'konkurs'
+2025-09-17 15:15:13,717 - aiogram.dispatcher - INFO - Polling stopped
+2025-09-17 15:15:13,973 - __main__ - INFO - Bot shutdown completed
+2025-09-17 15:15:13,973 - __main__ - INFO - Bot shutdown completed
+2025-09-17 15:15:20,432 - __main__ - INFO - Database initialized successfully
+2025-09-17 15:16:20,573 - __main__ - ERROR - Failed to initialize bot: HTTP Client says - Request timeout error
+2025-09-17 15:16:20,576 - __main__ - ERROR - Critical error: HTTP Client says - Request timeout error
+2025-09-17 15:16:20,828 - __main__ - INFO - Bot shutdown completed
+2025-09-17 15:16:29,949 - __main__ - INFO - Database initialized successfully
+2025-09-17 15:16:30,456 - __main__ - INFO - Bot initialized: @tmkonkursbot
+2025-09-17 15:16:30,461 - __main__ - INFO - Bot components initialized successfully
+2025-09-17 15:16:30,462 - __main__ - INFO - Starting bot polling...
+2025-09-17 15:16:30,462 - aiogram.dispatcher - INFO - Start polling
+2025-09-17 15:16:30,592 - aiogram.dispatcher - INFO - Run polling for bot @tmkonkursbot id=5624896503 - 'konkurs'
+2025-09-17 15:16:31,206 - aiogram.event - INFO - Update id=181165366 is handled. Duration 441 ms by bot id=5624896503
+2025-09-17 15:16:31,534 - root - INFO - Deleted message from 6747043079 in -1002937503033: guruhda link tarqatish taqiqlanadi
+2025-09-17 15:16:31,535 - aiogram.event - INFO - Update id=181165364 is handled. Duration 770 ms by bot id=5624896503
+2025-09-17 15:16:31,577 - root - INFO - Deleted message from 6747043079 in -1002937503033: guruhda link tarqatish taqiqlanadi
+2025-09-17 15:16:31,578 - aiogram.event - INFO - Update id=181165365 is handled. Duration 813 ms by bot id=5624896503
+2025-09-17 15:16:40,761 - root - INFO - Found mentions in message: ['tmbekzod']
+2025-09-17 15:16:40,762 - root - INFO - Checking mention @tmbekzod: in_group=False
+2025-09-17 15:16:40,937 - root - INFO - Found @tmbekzod in administrators and added to database
+2025-09-17 15:16:40,937 - root - INFO - Adding user @tmbekzod to database (found in chat but not in DB)
+2025-09-17 15:16:40,941 - root - INFO - Added username @tmbekzod to database with temp ID 1010819656
+2025-09-17 15:16:40,942 - aiogram.event - INFO - Update id=181165367 is handled. Duration 330 ms by bot id=5624896503
+2025-09-17 15:16:49,452 - root - INFO - Found mentions in message: ['bekzod']
+2025-09-17 15:16:49,454 - root - INFO - Checking mention @bekzod: in_group=False
+2025-09-17 15:16:49,651 - root - INFO - Username @bekzod looks valid but cannot be verified - allowing mention
+2025-09-17 15:16:49,651 - root - INFO - Adding user @bekzod to database (found in chat but not in DB)
+2025-09-17 15:16:49,657 - root - INFO - Added username @bekzod to database with temp ID 1220376244
+2025-09-17 15:16:49,659 - aiogram.event - INFO - Update id=181165368 is handled. Duration 337 ms by bot id=5624896503
+2025-09-17 15:16:57,347 - root - INFO - Found mentions in message: ['bekzod_startups']
+2025-09-17 15:16:57,350 - root - INFO - Checking mention @bekzod_startups: in_group=False
+2025-09-17 15:16:57,984 - root - INFO - Deleted message from 6747043079 in -1002937503033: @bekzod_startups bu guruh a'zosi emas, begona foydalanuvchilarni mention qilish taqiqlanadi
+2025-09-17 15:16:57,984 - aiogram.event - INFO - Update id=181165369 is handled. Duration 792 ms by bot id=5624896503
+2025-09-17 15:17:07,629 - root - INFO - Found mentions in message: ['tmkonkursbot']
+2025-09-17 15:17:07,631 - root - INFO - Checking mention @tmkonkursbot: in_group=False
+2025-09-17 15:17:07,795 - root - INFO - Found @tmkonkursbot in administrators and added to database
+2025-09-17 15:17:07,795 - root - INFO - Adding user @tmkonkursbot to database (found in chat but not in DB)
+2025-09-17 15:17:07,799 - root - INFO - Added username @tmkonkursbot to database with temp ID 3619583922
+2025-09-17 15:17:07,800 - aiogram.event - INFO - Update id=181165370 is handled. Duration 290 ms by bot id=5624896503
+2025-09-17 15:17:14,048 - root - INFO - Found mentions in message: ['tmbekzod']
+2025-09-17 15:17:14,050 - root - INFO - Checking mention @tmbekzod: in_group=True
+2025-09-17 15:17:14,050 - aiogram.event - INFO - Update id=181165371 is handled. Duration 156 ms by bot id=5624896503
+2025-09-17 15:17:18,854 - root - INFO - Found mentions in message: ['bekzod']
+2025-09-17 15:17:18,856 - root - INFO - Checking mention @bekzod: in_group=True
+2025-09-17 15:17:18,856 - aiogram.event - INFO - Update id=181165372 is handled. Duration 161 ms by bot id=5624896503
+2025-09-17 15:17:32,414 - root - INFO - Found mentions in message: ['tmkonkurs']
+2025-09-17 15:17:32,416 - root - INFO - Checking mention @tmkonkurs: in_group=False
+2025-09-17 15:17:32,625 - root - INFO - Username @tmkonkurs looks valid but cannot be verified - allowing mention
+2025-09-17 15:17:32,626 - root - INFO - Adding user @tmkonkurs to database (found in chat but not in DB)
+2025-09-17 15:17:32,629 - root - INFO - Added username @tmkonkurs to database with temp ID 150948044
+2025-09-17 15:17:32,630 - aiogram.event - INFO - Update id=181165373 is handled. Duration 369 ms by bot id=5624896503
+2025-09-17 15:21:32,015 - aiogram.dispatcher - WARNING - Received SIGINT signal
+2025-09-17 15:21:32,028 - aiogram.dispatcher - INFO - Polling stopped for bot @tmkonkursbot id=5624896503 - 'konkurs'
+2025-09-17 15:21:32,029 - aiogram.dispatcher - INFO - Polling stopped
+2025-09-17 15:21:32,280 - __main__ - INFO - Bot shutdown completed
+2025-09-17 15:21:32,281 - __main__ - INFO - Bot shutdown completed
+2025-09-17 15:21:37,534 - __main__ - INFO - Database initialized successfully
+2025-09-17 15:21:38,086 - __main__ - INFO - Bot initialized: @tmkonkursbot
+2025-09-17 15:21:38,088 - __main__ - INFO - Bot components initialized successfully
+2025-09-17 15:21:38,088 - __main__ - INFO - Starting bot polling...
+2025-09-17 15:21:38,089 - aiogram.dispatcher - INFO - Start polling
+2025-09-17 15:21:38,239 - aiogram.dispatcher - INFO - Run polling for bot @tmkonkursbot id=5624896503 - 'konkurs'
+2025-09-17 15:21:47,374 - aiogram.event - INFO - Update id=181165374 is handled. Duration 565 ms by bot id=5624896503
+2025-09-17 15:21:54,777 - root - INFO - Found mentions in message: ['tmkonkur']
+2025-09-17 15:21:54,779 - root - INFO - Checking mention @tmkonkur: in_group=False
+2025-09-17 15:21:55,248 - root - INFO - Chat -1002937503033 has 3 members
+2025-09-17 15:21:55,248 - root - INFO - Username @tmkonkur could not be verified in group - blocking mention
+2025-09-17 15:21:55,611 - root - INFO - Deleted message from 6747043079 in -1002937503033: @tmkonkur bu guruh a'zosi emas, begona foydalanuvchilarni mention qilish taqiqlanadi
+2025-09-17 15:21:55,612 - aiogram.event - INFO - Update id=181165375 is handled. Duration 994 ms by bot id=5624896503
+2025-09-17 15:21:59,127 - root - INFO - Found mentions in message: ['tmkonkursbot']
+2025-09-17 15:21:59,129 - root - INFO - Checking mention @tmkonkursbot: in_group=True
+2025-09-17 15:21:59,130 - aiogram.event - INFO - Update id=181165376 is handled. Duration 142 ms by bot id=5624896503
+2025-09-17 15:22:02,787 - root - INFO - Found mentions in message: ['tmbekzod']
+2025-09-17 15:22:02,789 - root - INFO - Checking mention @tmbekzod: in_group=True
+2025-09-17 15:22:02,789 - aiogram.event - INFO - Update id=181165377 is handled. Duration 150 ms by bot id=5624896503
+2025-09-17 15:22:08,269 - root - INFO - Found mentions in message: ['tmbekzod2']
+2025-09-17 15:22:08,271 - root - INFO - Checking mention @tmbekzod2: in_group=False
+2025-09-17 15:22:08,709 - root - INFO - Chat -1002937503033 has 3 members
+2025-09-17 15:22:08,709 - root - INFO - Username @tmbekzod2 could not be verified in group - blocking mention
+2025-09-17 15:22:09,018 - root - INFO - Deleted message from 6747043079 in -1002937503033: @tmbekzod2 bu guruh a'zosi emas, begona foydalanuvchilarni mention qilish taqiqlanadi
+2025-09-17 15:22:09,018 - aiogram.event - INFO - Update id=181165378 is handled. Duration 899 ms by bot id=5624896503
+2025-09-17 15:22:16,647 - root - INFO - Deleted message from 6747043079 in -1002937503033: guruhda link tarqatish taqiqlanadi
+2025-09-17 15:22:16,647 - aiogram.event - INFO - Update id=181165379 is handled. Duration 874 ms by bot id=5624896503
+2025-09-17 15:22:37,111 - aiogram.event - INFO - Update id=181165380 is handled. Duration 237 ms by bot id=5624896503
+2025-09-17 15:22:46,037 - aiogram.event - INFO - Update id=181165381 is handled. Duration 194 ms by bot id=5624896503
+2025-09-17 15:22:48,621 - aiogram.event - INFO - Update id=181165382 is handled. Duration 283 ms by bot id=5624896503
+2025-09-17 15:22:49,862 - aiogram.event - INFO - Update id=181165383 is not handled. Duration 1 ms by bot id=5624896503
+2025-09-17 15:23:01,252 - aiogram.event - INFO - Update id=181165384 is not handled. Duration 1 ms by bot id=5624896503
+2025-09-17 15:25:40,480 - aiogram.event - INFO - Update id=181165385 is handled. Duration 181 ms by bot id=5624896503
+2025-09-17 15:25:42,301 - aiogram.event - INFO - Update id=181165386 is handled. Duration 206 ms by bot id=5624896503
+2025-09-17 15:25:45,161 - aiogram.event - INFO - Update id=181165387 is handled. Duration 447 ms by bot id=5624896503

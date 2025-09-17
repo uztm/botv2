@@ -1,0 +1,26 @@
+2025-09-17 14:49:18,394 - __main__ - INFO - Database initialized successfully
+2025-09-17 14:49:18,981 - __main__ - INFO - Bot initialized: @tmkonkursbot
+2025-09-17 14:49:18,986 - __main__ - ERROR - Failed to initialize bot: 'AdminHandlers' object has no attribute 'handle_broadcast_message'
+2025-09-17 14:49:18,986 - __main__ - ERROR - Critical error: 'AdminHandlers' object has no attribute 'handle_broadcast_message'
+2025-09-17 14:49:19,238 - __main__ - INFO - Bot shutdown completed
+2025-09-17 14:50:01,992 - __main__ - INFO - Database initialized successfully
+2025-09-17 14:50:03,556 - __main__ - INFO - Bot initialized: @tmkonkursbot
+2025-09-17 14:50:03,560 - __main__ - INFO - Bot components initialized successfully
+2025-09-17 14:50:03,560 - __main__ - INFO - Starting bot polling...
+2025-09-17 14:50:03,560 - aiogram.dispatcher - INFO - Start polling
+2025-09-17 14:50:03,707 - aiogram.dispatcher - INFO - Run polling for bot @tmkonkursbot id=5624896503 - 'konkurs'
+2025-09-17 14:50:04,793 - aiogram.event - INFO - Update id=181165349 is handled. Duration 906 ms by bot id=5624896503
+2025-09-17 14:50:25,466 - aiogram.event - INFO - Update id=181165350 is handled. Duration 228 ms by bot id=5624896503
+2025-09-17 14:51:05,923 - aiogram.event - INFO - Update id=181165351 is handled. Duration 284 ms by bot id=5624896503
+2025-09-17 14:51:07,748 - aiogram.event - INFO - Update id=181165352 is handled. Duration 288 ms by bot id=5624896503
+2025-09-17 14:51:10,265 - aiogram.event - INFO - Update id=181165353 is handled. Duration 207 ms by bot id=5624896503
+2025-09-17 14:51:12,422 - aiogram.event - INFO - Update id=181165354 is handled. Duration 160 ms by bot id=5624896503
+2025-09-17 14:51:13,946 - aiogram.event - INFO - Update id=181165355 is handled. Duration 365 ms by bot id=5624896503
+2025-09-17 14:51:19,670 - aiogram.event - INFO - Update id=181165356 is handled. Duration 189 ms by bot id=5624896503
+2025-09-17 14:51:30,055 - aiogram.event - INFO - Update id=181165357 is handled. Duration 619 ms by bot id=5624896503
+2025-09-17 14:51:42,951 - aiogram.event - INFO - Update id=181165358 is handled. Duration 499 ms by bot id=5624896503
+2025-09-17 14:52:06,857 - aiogram.dispatcher - WARNING - Received SIGINT signal
+2025-09-17 14:52:06,859 - aiogram.dispatcher - INFO - Polling stopped for bot @tmkonkursbot id=5624896503 - 'konkurs'
+2025-09-17 14:52:06,859 - aiogram.dispatcher - INFO - Polling stopped
+2025-09-17 14:52:07,111 - __main__ - INFO - Bot shutdown completed
+2025-09-17 14:52:07,112 - __main__ - INFO - Bot shutdown completed

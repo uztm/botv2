@@ -208,7 +208,7 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
                                 # Additional validation - check if username follows Telegram rules
                                 if self.is_valid_telegram_username(mention):
                                     should_delete = True
-                                    reason = f"@{mention} bu guruh a'zosi emas, begona foydalanuvchilarni mention qilish taqiqlanadi"
+                                    reason = f"siz belgilagan username guruh azosi emas, begona foydalanuvchilarni mention qilish taqiqlanadi"
                                     break
                                 else:
                                     # Invalid username format, skip (might be false positive)

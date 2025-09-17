@@ -21,6 +21,182 @@ class AdminHandlers:
         self.broadcast_waiting = {}
         self.broadcast_message = None
     
+    async def handle_broadcast_message(self, message: Message):
+        """Handle broadcast message from admin"""
+        try:
+            if message.from_user.id not in self.broadcast_waiting:
+                return
+            
+            # Remove from waiting list
+            del self.broadcast_waiting[message.from_user.id]
+            
+            # Get all groups
+            groups = await self.db.get_all_groups()
+            
+            if not groups:
+                await message.answer("❌ Faol guruhlar topilmadi!")
+                return
+            
+            # Confirm broadcast
+            confirm_text = f"""
+📢 **Broadcast Tasdiqlash**
+
+📝 **Xabaringiz:**
+{message.text[:500]}{'...' if len(message.text) > 500 else ''}
+
+📊 **Jo'natiladi:**
+• {len(groups)} ta faol guruhga
+• Taxminan {len(groups) * 2} soniya ichida
+
+⚠️ **Diqqat:** Bu amalni bekor qilib bo'lmaydi!
+
+Davom etishni xohlaysizmi?
+            """
+            
+            # Store the broadcast message
+            self.broadcast_message = message
+            
+            await message.answer(
+                confirm_text,
+                reply_markup=Keyboards.get_confirmation_keyboard("broadcast"),
+                parse_mode=ParseMode.MARKDOWN
+            )
+            
+        except Exception as e:
+            logging.error(f"Error handling broadcast message: {e}")
+            await message.answer(f"❌ Xatolik: {str(e)}")
+    
+    async def send_broadcast_confirmed(self, callback: CallbackQuery):
+        """Send broadcast message to all groups"""
+        try:
+            if not self.broadcast_message:
+                await callback.answer("❌ Broadcast xabar topilmadi!", show_alert=True)
+                return
+            
+            groups = await self.db.get_all_groups()
+            
+            if not groups:
+                await callback.message.edit_text("❌ Faol guruhlar topilmadi!")
+                return
+            
+            # Start broadcasting
+            status_text = f"""
+📢 **Broadcast Boshlandi**
+
+📊 **Holat:**
+• Jami guruhlar: {len(groups)}
+• Jo'natildi: 0
+• Xatoliklar: 0
+• Jarayon: 0%
+
+⏳ Iltimos kuting...
+            """
+            
+            status_msg = await callback.message.edit_text(
+                status_text,
+                parse_mode=ParseMode.MARKDOWN
+            )
+            
+            sent_count = 0
+            error_count = 0
+            
+            for i, group in enumerate(groups, 1):
+                try:
+                    await self.bot.send_message(
+                        group['id'],
+                        self.broadcast_message.text
+                    )
+                    sent_count += 1
+                    
+                    # Small delay to avoid rate limits
+                    await asyncio.sleep(0.5)
+                    
+                except Exception as e:
+                    error_count += 1
+                    logging.warning(f"Failed to send broadcast to group {group['id']}: {e}")
+                
+                # Update status every 5 groups or at the end
+                if i % 5 == 0 or i == len(groups):
+                    progress = int((i / len(groups)) * 100)
+                    
+                    status_text = f"""
+📢 **Broadcast Jarayoni**
+
+📊 **Holat:**
+• Jami guruhlar: {len(groups)}
+• Jo'natildi: {sent_count}
+• Xatoliklar: {error_count}  
+• Jarayon: {progress}%
+
+{'✅ Yakunlandi!' if i == len(groups) else '⏳ Davom etmoqda...'}
+                    """
+                    
+                    try:
+                        await status_msg.edit_text(
+                            status_text,
+                            parse_mode=ParseMode.MARKDOWN
+                        )
+                    except:
+                        pass  # Ignore edit errors
+            
+            # Final summary
+            final_text = f"""
+✅ **Broadcast Yakunlandi!**
+
+📊 **Natijalar:**
+• Muvaffaqiyatli jo'natildi: {sent_count}
+• Xatoliklar: {error_count}
+• Jami guruhlar: {len(groups)}
+• Muvaffaqiyat darajasi: {int((sent_count/len(groups))*100)}%
+
+⏰ **Vaqt:** {datetime.now().strftime('%d.%m.%Y %H:%M')}
+
+{'🎉 Barcha guruhlarga muvaffaqiyatli jo\'natildi!' if error_count == 0 else f'⚠️ {error_count} ta guruhga jo\'natishda xatolik yuz berdi.'}
+            """
+            
+            await status_msg.edit_text(
+                final_text,
+                reply_markup=Keyboards.get_admin_keyboard(),
+                parse_mode=ParseMode.MARKDOWN
+            )
+            
+            # Clear broadcast message
+            self.broadcast_message = None
+            
+        except Exception as e:
+            logging.error(f"Error sending broadcast: {e}")
+            await callback.message.edit_text(
+                f"❌ Broadcast yuborishda xatolik:\n{str(e)[:200]}...",
+                reply_markup=Keyboards.get_admin_keyboard()
+            )
+    
+    async def remove_group_confirmed(self, callback: CallbackQuery, group_id: int):
+        """Remove group after confirmation"""
+        try:
+            success = await self.db.remove_group(group_id)
+            
+            if success:
+                await callback.message.edit_text(
+                    f"✅ **Guruh muvaffaqiyatli o'chirildi!**\n\nGuruh ID: `{group_id}`\nBarcha ma'lumotlar database'dan o'chirildi.",
+                    reply_markup=Keyboards.get_admin_keyboard(),
+                    parse_mode=ParseMode.MARKDOWN
+                )
+                logging.info(f"Group {group_id} removed by admin {callback.from_user.id}")
+            else:
+                await callback.message.edit_text(
+                    f"❌ **Xatolik!**\n\nGuruhni o'chirishda xatolik yuz berdi.\nGuruh ID: `{group_id}`",
+                    reply_markup=Keyboards.get_admin_keyboard(),
+                    parse_mode=ParseMode.MARKDOWN
+                )
+                
+        except Exception as e:
+            logging.error(f"Error removing group {group_id}: {e}")
+            await callback.message.edit_text(
+                f"❌ **Xatolik!**\n\n`{str(e)[:200]}...`",
+                reply_markup=Keyboards.get_admin_keyboard(),
+                parse_mode=ParseMode.MARKDOWN
+            )
+    
     async def show_admin_panel(self, message: Message):
         """Show admin panel"""
         groups = await self.db.get_all_groups()
@@ -178,8 +354,6 @@ Davom etishni xohlaysizmi?
 
 🔄 **So'nggi yangilanish:** {datetime.now().strftime('%H:%M:%S')}
         """
-        
-        back_keyboard = [[{"text": "🔙 Orqaga", "callback_data": "admin_back"}]]
         
         await status_msg.edit_text(
             stats_text,
@@ -649,5 +823,3 @@ Haqiqatan ham davom etishni xohlaysizmi?
             await self.remove_group_confirmed(callback, group_id)
         elif data == "broadcast":
             await self.send_broadcast_confirmed(callback)
-    
-    

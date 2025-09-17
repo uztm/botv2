@@ -60,14 +60,14 @@ class TelegramBot:
             self.dp.include_router(self.handlers.router)
             
             # Add broadcast message handler
-            # self.dp.message.register(
-            #     self.handlers.admin_handlers.handle_broadcast_message,
-            #     lambda message: (
-            #         message.from_user.id == self.config.SUPERADMIN_ID and
-            #         message.from_user.id in self.handlers.admin_handlers.broadcast_waiting and
-            #         message.text
-            #     )
-            # )
+            self.dp.message.register(
+                self.handlers.admin_handlers.handle_broadcast_message,
+                lambda message: (
+                    message.from_user.id == self.config.SUPERADMIN_ID and
+                    message.from_user.id in self.handlers.admin_handlers.broadcast_waiting and
+                    message.text
+                )
+            )
             
             logger.info("Bot components initialized successfully")
             

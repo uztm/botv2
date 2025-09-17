@@ -1,2 +1,4 @@
 bot_database.db
 __pycache__/
+__pycache__
+bot.log

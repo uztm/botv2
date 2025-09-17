@@ -24,3 +24,37 @@
 2025-09-17 14:52:06,859 - aiogram.dispatcher - INFO - Polling stopped
 2025-09-17 14:52:07,111 - __main__ - INFO - Bot shutdown completed
 2025-09-17 14:52:07,112 - __main__ - INFO - Bot shutdown completed
+2025-09-17 14:58:42,722 - __main__ - INFO - Database initialized successfully
+2025-09-17 14:58:43,526 - __main__ - INFO - Bot initialized: @tmkonkursbot
+2025-09-17 14:58:43,529 - __main__ - INFO - Bot components initialized successfully
+2025-09-17 14:58:43,529 - __main__ - INFO - Starting bot polling...
+2025-09-17 14:58:43,529 - aiogram.dispatcher - INFO - Start polling
+2025-09-17 14:58:43,700 - aiogram.dispatcher - INFO - Run polling for bot @tmkonkursbot id=5624896503 - 'konkurs'
+2025-09-17 14:58:53,947 - root - INFO - Deleted message from 6747043079 in -1002937503033: guruhda link tarqatish taqiqlanadi
+2025-09-17 14:58:53,947 - aiogram.event - INFO - Update id=181165359 is handled. Duration 872 ms by bot id=5624896503
+2025-09-17 14:59:01,174 - root - INFO - Deleted message from 6747043079 in -1002937503033: guruhda link tarqatish taqiqlanadi
+2025-09-17 14:59:01,174 - aiogram.event - INFO - Update id=181165360 is handled. Duration 617 ms by bot id=5624896503
+2025-09-17 15:01:14,660 - aiogram.dispatcher - WARNING - Received SIGINT signal
+2025-09-17 15:01:14,663 - aiogram.dispatcher - INFO - Polling stopped for bot @tmkonkursbot id=5624896503 - 'konkurs'
+2025-09-17 15:01:14,663 - aiogram.dispatcher - INFO - Polling stopped
+2025-09-17 15:01:14,917 - __main__ - INFO - Bot shutdown completed
+2025-09-17 15:01:14,918 - __main__ - INFO - Bot shutdown completed
+2025-09-17 15:01:22,590 - __main__ - INFO - Database initialized successfully
+2025-09-17 15:01:23,187 - __main__ - INFO - Bot initialized: @tmkonkursbot
+2025-09-17 15:01:23,191 - __main__ - INFO - Bot components initialized successfully
+2025-09-17 15:01:23,191 - __main__ - INFO - Starting bot polling...
+2025-09-17 15:01:23,192 - aiogram.dispatcher - INFO - Start polling
+2025-09-17 15:01:23,340 - aiogram.dispatcher - INFO - Run polling for bot @tmkonkursbot id=5624896503 - 'konkurs'
+2025-09-17 15:01:34,854 - root - INFO - Found mentions in message: ['tmbekzod']
+2025-09-17 15:01:34,856 - root - INFO - Checking mention @tmbekzod: in_group=False
+2025-09-17 15:01:35,249 - root - INFO - Deleted message from 6747043079 in -1002937503033: @tmbekzod bu guruh a'zosi emas, begona foydalanuvchilarni mention qilish taqiqlanadi
+2025-09-17 15:01:35,250 - aiogram.event - INFO - Update id=181165361 is handled. Duration 867 ms by bot id=5624896503
+2025-09-17 15:01:46,583 - root - INFO - Found mentions in message: ['tmbekzod']
+2025-09-17 15:01:46,585 - root - INFO - Checking mention @tmbekzod: in_group=False
+2025-09-17 15:01:47,023 - root - INFO - Deleted message from 6747043079 in -1002937503033: @tmbekzod bu guruh a'zosi emas, begona foydalanuvchilarni mention qilish taqiqlanadi
+2025-09-17 15:01:47,024 - aiogram.event - INFO - Update id=181165362 is handled. Duration 622 ms by bot id=5624896503
+2025-09-17 15:04:20,568 - aiogram.dispatcher - WARNING - Received SIGINT signal
+2025-09-17 15:04:20,572 - aiogram.dispatcher - INFO - Polling stopped for bot @tmkonkursbot id=5624896503 - 'konkurs'
+2025-09-17 15:04:20,572 - aiogram.dispatcher - INFO - Polling stopped
+2025-09-17 15:04:20,827 - __main__ - INFO - Bot shutdown completed
+2025-09-17 15:04:20,828 - __main__ - INFO - Bot shutdown completed

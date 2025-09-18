@@ -307,7 +307,7 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
                     warning_msg = await message.answer(f"⚠️ {user_mention}, {reason}!")
                     
                     # Auto-delete warning after 30 seconds
-                    asyncio.create_task(self.delete_after_delay(warning_msg, 1))
+                    asyncio.create_task(self.delete_after_delay(warning_msg, 10))
                     logging.info(f"Deleted message from {message.from_user.id} in {message.chat.id}: {reason}")
                     
                 except TelegramBadRequest as e:

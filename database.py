@@ -28,6 +28,7 @@ class Database:
                     username TEXT,
                     first_name TEXT,
                     last_name TEXT,
+                    is_verified BOOLEAN DEFAULT FALSE,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     PRIMARY KEY (group_id, user_id),
                     FOREIGN KEY (group_id) REFERENCES groups (id)
@@ -49,6 +50,12 @@ class Database:
             await db.execute('''
                 CREATE INDEX IF NOT EXISTS idx_group_members_username 
                 ON group_members (group_id, username)
+            ''')
+            
+            # Create index for verified members
+            await db.execute('''
+                CREATE INDEX IF NOT EXISTS idx_group_members_verified 
+                ON group_members (group_id, is_verified)
             ''')
             
             await db.commit()
@@ -93,14 +100,14 @@ class Database:
             return [dict(row) for row in rows]
     
     async def update_group_member(self, group_id: int, user_id: int, username: str = None, 
-                                first_name: str = None, last_name: str = None):
-        """Update or add group member"""
+                                first_name: str = None, last_name: str = None, is_verified: bool = True):
+        """Update or add group member with verification status"""
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute('''
                 INSERT OR REPLACE INTO group_members 
-                (group_id, user_id, username, first_name, last_name, updated_at)
-                VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-            ''', (group_id, user_id, username, first_name, last_name))
+                (group_id, user_id, username, first_name, last_name, is_verified, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            ''', (group_id, user_id, username, first_name, last_name, is_verified))
             await db.commit()
     
     async def remove_group_member(self, group_id: int, user_id: int):
@@ -113,7 +120,7 @@ class Database:
             await db.commit()
     
     async def is_user_in_group(self, group_id: int, username: str) -> bool:
-        """Check if user with username exists in group with improved matching"""
+        """Check if user with username exists in group - ONLY VERIFIED USERS"""
         if not username:
             return False
         
@@ -125,28 +132,26 @@ class Database:
             return False
         
         async with aiosqlite.connect(self.db_path) as db:
-            # Check for exact username match (case insensitive)
+            # Check for exact username match (case insensitive) - ONLY verified users
             cursor = await db.execute(
-                'SELECT 1 FROM group_members WHERE group_id = ? AND LOWER(username) = ? AND username IS NOT NULL',
+                '''SELECT 1 FROM group_members 
+                   WHERE group_id = ? AND LOWER(username) = ? 
+                   AND username IS NOT NULL AND is_verified = TRUE''',
                 (group_id, username)
             )
             result = await cursor.fetchone()
             
-            if result:
-                return True
-            
-            # Also check if username exists with different case variations
+            return result is not None
+    
+    async def get_verified_members_count(self, group_id: int) -> int:
+        """Get count of verified members in group"""
+        async with aiosqlite.connect(self.db_path) as db:
             cursor = await db.execute(
-                'SELECT username FROM group_members WHERE group_id = ? AND username IS NOT NULL',
+                'SELECT COUNT(*) FROM group_members WHERE group_id = ? AND is_verified = TRUE',
                 (group_id,)
             )
-            all_usernames = await cursor.fetchall()
-            
-            for db_username in all_usernames:
-                if db_username[0] and db_username[0].lower() == username:
-                    return True
-            
-            return False
+            result = await cursor.fetchone()
+            return result[0] if result else 0
     
     async def get_group_settings(self, group_id: int) -> Dict:
         """Get group settings"""
@@ -167,7 +172,7 @@ class Database:
             }
     
     async def get_group_member_count(self, group_id: int) -> int:
-        """Get count of members in group"""
+        """Get count of all members in group"""
         async with aiosqlite.connect(self.db_path) as db:
             cursor = await db.execute(
                 'SELECT COUNT(*) FROM group_members WHERE group_id = ?',
@@ -177,7 +182,7 @@ class Database:
             return result[0] if result else 0
     
     async def search_user_by_username(self, group_id: int, username: str) -> Optional[Dict]:
-        """Search for user by username in specific group"""
+        """Search for verified user by username in specific group"""
         if not username:
             return None
         
@@ -187,9 +192,37 @@ class Database:
             db.row_factory = aiosqlite.Row
             cursor = await db.execute(
                 '''SELECT * FROM group_members 
-                   WHERE group_id = ? AND LOWER(username) = ? AND username IS NOT NULL
+                   WHERE group_id = ? AND LOWER(username) = ? 
+                   AND username IS NOT NULL AND is_verified = TRUE
                    ORDER BY updated_at DESC LIMIT 1''',
                 (group_id, username)
             )
             row = await cursor.fetchone()
             return dict(row) if row else None
+    
+    async def mark_user_as_verified(self, group_id: int, username: str):
+        """Mark a user as verified (they actually exist in the group)"""
+        if not username:
+            return
+        
+        username = username.lstrip('@')
+        
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute(
+                '''UPDATE group_members 
+                   SET is_verified = TRUE, updated_at = CURRENT_TIMESTAMP 
+                   WHERE group_id = ? AND LOWER(username) = LOWER(?)''',
+                (group_id, username)
+            )
+            await db.commit()
+    
+    async def cleanup_unverified_users(self, group_id: int, days_old: int = 7):
+        """Remove unverified users older than specified days"""
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute(
+                '''DELETE FROM group_members 
+                   WHERE group_id = ? AND is_verified = FALSE 
+                   AND updated_at < datetime('now', '-{} days')'''.format(days_old),
+                (group_id,)
+            )
+            await db.commit()

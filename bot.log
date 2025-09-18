@@ -166,3 +166,513 @@
 2025-09-17 15:25:40,480 - aiogram.event - INFO - Update id=181165385 is handled. Duration 181 ms by bot id=5624896503
 2025-09-17 15:25:42,301 - aiogram.event - INFO - Update id=181165386 is handled. Duration 206 ms by bot id=5624896503
 2025-09-17 15:25:45,161 - aiogram.event - INFO - Update id=181165387 is handled. Duration 447 ms by bot id=5624896503
+2025-09-17 15:42:40,040 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2025-09-17 15:42:40,053 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 5624896503)
+2025-09-17 15:43:52,046 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2025-09-17 15:43:52,048 - aiogram.dispatcher - WARNING - Sleep for 1.372990 seconds and try again... (tryings = 1, bot id = 5624896503)
+2025-09-17 15:45:04,057 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2025-09-17 15:45:04,061 - aiogram.dispatcher - WARNING - Sleep for 1.669517 seconds and try again... (tryings = 2, bot id = 5624896503)
+2025-09-17 15:45:16,405 - aiogram.dispatcher - INFO - Connection established (tryings = 3, bot id = 5624896503)
+2025-09-17 15:45:59,975 - aiogram.event - INFO - Update id=181165388 is handled. Duration 674 ms by bot id=5624896503
+2025-09-17 15:46:02,113 - aiogram.event - INFO - Update id=181165389 is not handled. Duration 281 ms by bot id=5624896503
+2025-09-17 15:46:02,114 - aiogram.event - ERROR - Cause exception while process update id=181165389 by bot id=5624896503
+TelegramBadRequest: Telegram server says - Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/dispatcher.py", line 309, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/dispatcher.py", line 158, in feed_update
+    response = await self.update.wrap_outer_middleware(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/middlewares/error.py", line 25, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 56, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/fsm/middleware.py", line 42, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/dispatcher.py", line 276, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/router.py", line 146, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/router.py", line 141, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        observer=observer, update_type=update_type, event=telegram_event, **data
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/router.py", line 174, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/router.py", line 146, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/router.py", line 141, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        observer=observer, update_type=update_type, event=telegram_event, **data
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/router.py", line 166, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/Users/tmbekzod/Desktop/PDP Bot V 2.0/abab/handlers.py", line 472, in handle_admin_callback
+    await self.admin_handlers.handle_callback(callback)
+  File "/Users/tmbekzod/Desktop/PDP Bot V 2.0/abab/admin_handlers.py", line 230, in handle_callback
+    await self.show_groups_list(callback)
+  File "/Users/tmbekzod/Desktop/PDP Bot V 2.0/abab/admin_handlers.py", line 268, in show_groups_list
+    await callback.message.edit_text(
+    ...<3 lines>...
+    )
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/methods/base.py", line 84, in emit
+    return await bot(self)
+           ^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/client/bot.py", line 482, in __call__
+    return await self.session(self, method, timeout=request_timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/client/session/base.py", line 254, in __call__
+    return cast(TelegramType, await middleware(bot, method))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/client/session/aiohttp.py", line 185, in make_request
+    response = self.check_response(
+        bot=bot, method=method, status_code=resp.status, content=raw_result
+    )
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/client/session/base.py", line 120, in check_response
+    raise TelegramBadRequest(method=method, message=description)
+aiogram.exceptions.TelegramBadRequest: Telegram server says - Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+2025-09-17 15:46:03,052 - aiogram.event - INFO - Update id=181165390 is handled. Duration 456 ms by bot id=5624896503
+2025-09-17 15:46:05,661 - aiogram.event - INFO - Update id=181165391 is handled. Duration 180 ms by bot id=5624896503
+2025-09-17 15:46:08,761 - aiogram.event - INFO - Update id=181165392 is not handled. Duration 291 ms by bot id=5624896503
+2025-09-17 15:46:08,761 - aiogram.event - ERROR - Cause exception while process update id=181165392 by bot id=5624896503
+TelegramBadRequest: Telegram server says - Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/dispatcher.py", line 309, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/dispatcher.py", line 158, in feed_update
+    response = await self.update.wrap_outer_middleware(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/middlewares/error.py", line 25, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/middlewares/user_context.py", line 56, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/fsm/middleware.py", line 42, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/dispatcher.py", line 276, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/router.py", line 146, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/router.py", line 141, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        observer=observer, update_type=update_type, event=telegram_event, **data
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/router.py", line 174, in _propagate_event
+    response = await router.propagate_event(update_type=update_type, event=event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/router.py", line 146, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/router.py", line 141, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        observer=observer, update_type=update_type, event=telegram_event, **data
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/router.py", line 166, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/event/telegram.py", line 121, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "/Users/tmbekzod/Desktop/PDP Bot V 2.0/abab/handlers.py", line 472, in handle_admin_callback
+    await self.admin_handlers.handle_callback(callback)
+  File "/Users/tmbekzod/Desktop/PDP Bot V 2.0/abab/admin_handlers.py", line 236, in handle_callback
+    await self.show_bot_settings(callback)
+  File "/Users/tmbekzod/Desktop/PDP Bot V 2.0/abab/admin_handlers.py", line 414, in show_bot_settings
+    await callback.message.edit_text(
+    ...<3 lines>...
+    )
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/methods/base.py", line 84, in emit
+    return await bot(self)
+           ^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/client/bot.py", line 482, in __call__
+    return await self.session(self, method, timeout=request_timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/client/session/base.py", line 254, in __call__
+    return cast(TelegramType, await middleware(bot, method))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/client/session/aiohttp.py", line 185, in make_request
+    response = self.check_response(
+        bot=bot, method=method, status_code=resp.status, content=raw_result
+    )
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/aiogram/client/session/base.py", line 120, in check_response
+    raise TelegramBadRequest(method=method, message=description)
+aiogram.exceptions.TelegramBadRequest: Telegram server says - Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+2025-09-17 15:46:16,992 - aiogram.event - INFO - Update id=181165393 is handled. Duration 406 ms by bot id=5624896503
+2025-09-17 15:46:18,664 - aiogram.event - INFO - Update id=181165394 is handled. Duration 236 ms by bot id=5624896503
+2025-09-17 15:55:51,154 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2025-09-17 15:55:51,157 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 5624896503)
+2025-09-17 15:56:02,704 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 5624896503)
+2025-09-17 15:58:14,176 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2025-09-17 15:58:14,179 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 5624896503)
+2025-09-17 16:08:33,895 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2025-09-17 16:08:33,897 - aiogram.dispatcher - WARNING - Sleep for 1.327989 seconds and try again... (tryings = 1, bot id = 5624896503)
+2025-09-17 16:08:45,665 - aiogram.dispatcher - INFO - Connection established (tryings = 2, bot id = 5624896503)
+2025-09-17 16:29:11,015 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - ServerDisconnectedError: Server disconnected
+2025-09-17 16:29:11,020 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 5624896503)
+2025-09-17 16:29:22,769 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 5624896503)
+2025-09-17 17:19:51,291 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2025-09-17 17:19:51,301 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 5624896503)
+2025-09-17 17:20:02,888 - aiogram.dispatcher - INFO - Connection established (tryings = 1, bot id = 5624896503)
+2025-09-17 17:59:18,253 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2025-09-17 17:59:18,257 - aiogram.dispatcher - WARNING - Sleep for 1.000000 seconds and try again... (tryings = 0, bot id = 5624896503)
+2025-09-17 18:02:56,233 - aiogram.dispatcher - ERROR - Failed to fetch updates - TelegramNetworkError: HTTP Client says - Request timeout error
+2025-09-17 18:02:56,235 - aiogram.dispatcher - WARNING - Sleep for 1.231870 seconds and try again... (tryings = 1, bot id = 5624896503)
+2025-09-17 18:03:08,120 - aiogram.dispatcher - INFO - Connection established (tryings = 2, bot id = 5624896503)
+2025-09-18 09:26:16,237 - __main__ - INFO - Database initialized successfully
+2025-09-18 09:26:33,202 - __main__ - INFO - Bot shutdown completed
+2025-09-18 09:26:37,870 - __main__ - INFO - Database initialized successfully
+2025-09-18 09:26:38,448 - __main__ - INFO - Bot initialized: @tmkonkursbot
+2025-09-18 09:26:38,452 - __main__ - INFO - Bot components initialized successfully
+2025-09-18 09:26:38,453 - __main__ - INFO - Starting bot polling...
+2025-09-18 09:26:38,453 - aiogram.dispatcher - INFO - Start polling
+2025-09-18 09:26:38,597 - aiogram.dispatcher - INFO - Run polling for bot @tmkonkursbot id=5624896503 - 'konkurs'
+2025-09-18 09:29:18,903 - aiogram.dispatcher - WARNING - Received SIGINT signal
+2025-09-18 09:29:18,906 - aiogram.dispatcher - INFO - Polling stopped for bot @tmkonkursbot id=5624896503 - 'konkurs'
+2025-09-18 09:29:18,907 - aiogram.dispatcher - INFO - Polling stopped
+2025-09-18 09:29:19,159 - __main__ - INFO - Bot shutdown completed
+2025-09-18 09:29:19,159 - __main__ - INFO - Bot shutdown completed
+2025-09-18 09:29:24,410 - __main__ - INFO - Database initialized successfully
+2025-09-18 09:29:24,983 - __main__ - INFO - Bot initialized: @PDP_adminbot
+2025-09-18 09:29:24,986 - __main__ - INFO - Bot components initialized successfully
+2025-09-18 09:29:24,986 - __main__ - INFO - Starting bot polling...
+2025-09-18 09:29:24,986 - aiogram.dispatcher - INFO - Start polling
+2025-09-18 09:29:25,113 - aiogram.dispatcher - INFO - Run polling for bot @PDP_adminbot id=8208519993 - 'PDP Group Admin'
+2025-09-18 09:29:25,908 - aiogram.event - INFO - Update id=716503538 is handled. Duration 469 ms by bot id=8208519993
+2025-09-18 09:29:25,921 - aiogram.event - INFO - Update id=716503556 is handled. Duration 480 ms by bot id=8208519993
+2025-09-18 09:29:25,927 - root - INFO - Found mentions in message: ['x_programmer', 'shakhobbozorov']
+2025-09-18 09:29:25,934 - root - INFO - Found mentions in message: ['tmbekzod']
+2025-09-18 09:29:25,943 - root - INFO - Checking mention @x_programmer: in_group=False
+2025-09-18 09:29:25,944 - root - INFO - Checking mention @tmbekzod: in_group=True
+2025-09-18 09:29:25,944 - aiogram.event - INFO - Update id=716503518 is handled. Duration 510 ms by bot id=8208519993
+2025-09-18 09:29:25,946 - root - INFO - Found mentions in message: ['pdp_adminbot']
+2025-09-18 09:29:25,954 - aiogram.event - INFO - Update id=716503551 is handled. Duration 514 ms by bot id=8208519993
+2025-09-18 09:29:25,955 - root - INFO - Checking mention @pdp_adminbot: in_group=False
+2025-09-18 09:29:25,961 - aiogram.event - INFO - Update id=716503546 is handled. Duration 522 ms by bot id=8208519993
+2025-09-18 09:29:25,967 - aiogram.event - INFO - Update id=716503540 is handled. Duration 529 ms by bot id=8208519993
+2025-09-18 09:29:25,967 - aiogram.event - INFO - Update id=716503514 is handled. Duration 534 ms by bot id=8208519993
+2025-09-18 09:29:25,972 - root - INFO - Found mentions in message: ['pdp_adminbot']
+2025-09-18 09:29:25,983 - aiogram.event - INFO - Update id=716503519 is handled. Duration 548 ms by bot id=8208519993
+2025-09-18 09:29:25,983 - aiogram.event - INFO - Update id=716503515 is handled. Duration 550 ms by bot id=8208519993
+2025-09-18 09:29:25,984 - root - INFO - Checking mention @pdp_adminbot: in_group=False
+2025-09-18 09:29:25,990 - root - INFO - Found mentions in message: ['bekpulatov_kamol']
+2025-09-18 09:29:26,004 - root - INFO - Checking mention @bekpulatov_kamol: in_group=True
+2025-09-18 09:29:26,004 - aiogram.event - INFO - Update id=716503525 is handled. Duration 569 ms by bot id=8208519993
+2025-09-18 09:29:26,006 - aiogram.event - INFO - Update id=716503532 is handled. Duration 569 ms by bot id=8208519993
+2025-09-18 09:29:26,014 - root - INFO - Found mentions in message: ['moobeanov']
+2025-09-18 09:29:26,015 - root - INFO - Found mentions in message: ['x_programmer']
+2025-09-18 09:29:26,015 - aiogram.event - INFO - Update id=716503511 is handled. Duration 582 ms by bot id=8208519993
+2025-09-18 09:29:26,020 - root - INFO - Checking mention @moobeanov: in_group=True
+2025-09-18 09:29:26,020 - aiogram.event - INFO - Update id=716503513 is handled. Duration 587 ms by bot id=8208519993
+2025-09-18 09:29:26,021 - aiogram.event - INFO - Update id=716503541 is handled. Duration 582 ms by bot id=8208519993
+2025-09-18 09:29:26,022 - aiogram.event - INFO - Update id=716503521 is handled. Duration 587 ms by bot id=8208519993
+2025-09-18 09:29:26,023 - aiogram.event - INFO - Update id=716503534 is handled. Duration 586 ms by bot id=8208519993
+2025-09-18 09:29:26,031 - aiogram.event - INFO - Update id=716503542 is handled. Duration 592 ms by bot id=8208519993
+2025-09-18 09:29:26,036 - root - INFO - Checking mention @x_programmer: in_group=True
+2025-09-18 09:29:26,036 - aiogram.event - INFO - Update id=716503536 is handled. Duration 599 ms by bot id=8208519993
+2025-09-18 09:29:26,037 - aiogram.event - INFO - Update id=716503559 is handled. Duration 595 ms by bot id=8208519993
+2025-09-18 09:29:26,039 - aiogram.event - INFO - Update id=716503557 is handled. Duration 598 ms by bot id=8208519993
+2025-09-18 09:29:26,047 - root - INFO - Found mentions in message: ['tmbekzod']
+2025-09-18 09:29:26,048 - root - INFO - Checking mention @tmbekzod: in_group=True
+2025-09-18 09:29:26,048 - aiogram.event - INFO - Update id=716503509 is handled. Duration 616 ms by bot id=8208519993
+2025-09-18 09:29:26,059 - root - INFO - Found mentions in message: ['moobeanov']
+2025-09-18 09:29:26,059 - aiogram.event - INFO - Update id=716503508 is handled. Duration 628 ms by bot id=8208519993
+2025-09-18 09:29:26,062 - root - INFO - Checking mention @moobeanov: in_group=True
+2025-09-18 09:29:26,063 - aiogram.event - INFO - Update id=716503522 is handled. Duration 627 ms by bot id=8208519993
+2025-09-18 09:29:26,063 - root - INFO - Found mentions in message: ['pdp_adminbot']
+2025-09-18 09:29:26,064 - aiogram.event - INFO - Update id=716503552 is handled. Duration 623 ms by bot id=8208519993
+2025-09-18 09:29:26,065 - root - INFO - Checking mention @pdp_adminbot: in_group=False
+2025-09-18 09:29:26,067 - root - INFO - Found mentions in message: ['tag']
+2025-09-18 09:29:26,071 - root - INFO - Found mentions in message: ['tmbekzod']
+2025-09-18 09:29:26,073 - root - INFO - Checking mention @tag: in_group=False
+2025-09-18 09:29:26,083 - root - INFO - Username @x_programmer looks valid but cannot be verified - allowing mention
+2025-09-18 09:29:26,083 - root - INFO - User @x_programmer verified in chat, adding to database
+2025-09-18 09:29:26,085 - aiogram.event - INFO - Update id=716503517 is handled. Duration 651 ms by bot id=8208519993
+2025-09-18 09:29:26,086 - root - INFO - Checking mention @tmbekzod: in_group=True
+2025-09-18 09:29:26,086 - aiogram.event - INFO - Update id=716503531 is handled. Duration 649 ms by bot id=8208519993
+2025-09-18 09:29:26,089 - root - INFO - Added username @x_programmer to database with temp ID 1486895591
+2025-09-18 09:29:26,090 - root - INFO - Found mentions in message: ['pdp_adminbot']
+2025-09-18 09:29:26,091 - aiogram.event - INFO - Update id=716503558 is handled. Duration 650 ms by bot id=8208519993
+2025-09-18 09:29:26,094 - aiogram.event - INFO - Update id=716503527 is handled. Duration 658 ms by bot id=8208519993
+2025-09-18 09:29:26,096 - root - INFO - Checking mention @shakhobbozorov: in_group=True
+2025-09-18 09:29:26,096 - aiogram.event - INFO - Update id=716503560 is handled. Duration 655 ms by bot id=8208519993
+2025-09-18 09:29:26,097 - root - INFO - Checking mention @pdp_adminbot: in_group=False
+2025-09-18 09:29:26,106 - aiogram.event - INFO - Update id=716503535 is handled. Duration 669 ms by bot id=8208519993
+2025-09-18 09:29:26,116 - root - INFO - Found @pdp_adminbot in administrators and added to database
+2025-09-18 09:29:26,116 - root - INFO - User @pdp_adminbot verified in chat, adding to database
+2025-09-18 09:29:26,119 - root - INFO - Added username @pdp_adminbot to database with temp ID 1785121877
+2025-09-18 09:29:26,119 - aiogram.event - INFO - Update id=716503529 is handled. Duration 682 ms by bot id=8208519993
+2025-09-18 09:29:26,122 - root - INFO - Found mentions in message: ['bekpulatov_kamol']
+2025-09-18 09:29:26,124 - root - INFO - Checking mention @bekpulatov_kamol: in_group=True
+2025-09-18 09:29:26,124 - aiogram.event - INFO - Update id=716503507 is handled. Duration 693 ms by bot id=8208519993
+2025-09-18 09:29:26,127 - root - INFO - Found @pdp_adminbot in administrators and added to database
+2025-09-18 09:29:26,127 - root - INFO - User @pdp_adminbot verified in chat, adding to database
+2025-09-18 09:29:26,131 - root - INFO - Added username @pdp_adminbot to database with temp ID 1785121877
+2025-09-18 09:29:26,131 - aiogram.event - INFO - Update id=716503544 is handled. Duration 692 ms by bot id=8208519993
+2025-09-18 09:29:26,141 - aiogram.event - INFO - Update id=716503510 is handled. Duration 708 ms by bot id=8208519993
+2025-09-18 09:29:26,150 - aiogram.event - INFO - Update id=716503516 is handled. Duration 716 ms by bot id=8208519993
+2025-09-18 09:29:26,163 - root - INFO - Found mentions in message: ['moobeanov']
+2025-09-18 09:29:26,164 - root - INFO - Checking mention @moobeanov: in_group=True
+2025-09-18 09:29:26,164 - aiogram.event - INFO - Update id=716503520 is handled. Duration 729 ms by bot id=8208519993
+2025-09-18 09:29:26,175 - root - INFO - Found mentions in message: ['tmbekzod']
+2025-09-18 09:29:26,176 - root - INFO - Checking mention @tmbekzod: in_group=True
+2025-09-18 09:29:26,185 - aiogram.event - INFO - Update id=716503524 is handled. Duration 749 ms by bot id=8208519993
+2025-09-18 09:29:26,262 - root - INFO - Username @tag appears invalid (format)
+2025-09-18 09:29:26,263 - root - INFO - Skipping invalid username format: @tag
+2025-09-18 09:29:26,263 - aiogram.event - INFO - Update id=716503549 is handled. Duration 823 ms by bot id=8208519993
+2025-09-18 09:29:26,268 - root - INFO - Found mentions in message: ['mention']
+2025-09-18 09:29:26,270 - root - INFO - Found @pdp_adminbot in administrators and added to database
+2025-09-18 09:29:26,271 - root - INFO - User @pdp_adminbot verified in chat, adding to database
+2025-09-18 09:29:26,273 - root - INFO - Checking mention @mention: in_group=False
+2025-09-18 09:29:26,277 - root - INFO - Added username @pdp_adminbot to database with temp ID 1785121877
+2025-09-18 09:29:26,278 - aiogram.event - INFO - Update id=716503545 is handled. Duration 838 ms by bot id=8208519993
+2025-09-18 09:29:26,279 - root - INFO - Deleted message from 1358124915 in -1002070409550: reklama xabarlar taqiqlanadi
+2025-09-18 09:29:26,279 - aiogram.event - INFO - Update id=716503554 is handled. Duration 838 ms by bot id=8208519993
+2025-09-18 09:29:26,310 - root - INFO - Found @pdp_adminbot in administrators and added to database
+2025-09-18 09:29:26,310 - root - INFO - User @pdp_adminbot verified in chat, adding to database
+2025-09-18 09:29:26,312 - root - INFO - Added username @pdp_adminbot to database with temp ID 1785121877
+2025-09-18 09:29:26,313 - aiogram.event - INFO - Update id=716503537 is handled. Duration 874 ms by bot id=8208519993
+2025-09-18 09:29:26,408 - root - INFO - Deleted message from 1358124915 in -1002070409550: reklama xabarlar taqiqlanadi
+2025-09-18 09:29:26,409 - aiogram.event - INFO - Update id=716503548 is handled. Duration 969 ms by bot id=8208519993
+2025-09-18 09:29:26,410 - root - INFO - Deleted message from 1358124915 in -1002070409550: reklama xabarlar taqiqlanadi
+2025-09-18 09:29:26,410 - aiogram.event - INFO - Update id=716503547 is handled. Duration 971 ms by bot id=8208519993
+2025-09-18 09:29:26,472 - aiogram.event - INFO - Update id=716503555 is handled. Duration 1031 ms by bot id=8208519993
+2025-09-18 09:29:26,495 - root - INFO - Username @mention looks valid but cannot be verified - allowing mention
+2025-09-18 09:29:26,496 - root - INFO - User @mention verified in chat, adding to database
+2025-09-18 09:29:26,498 - root - INFO - Added username @mention to database with temp ID 1246484245
+2025-09-18 09:29:26,498 - aiogram.event - INFO - Update id=716503561 is handled. Duration 1056 ms by bot id=8208519993
+2025-09-18 09:29:26,502 - root - INFO - Deleted message from 1358124915 in -1002070409550: reklama xabarlar taqiqlanadi
+2025-09-18 09:29:26,503 - aiogram.event - INFO - Update id=716503543 is handled. Duration 1064 ms by bot id=8208519993
+2025-09-18 09:29:26,504 - root - INFO - Deleted message from 1242411596 in -1002070409550: reklama xabarlar taqiqlanadi
+2025-09-18 09:29:26,504 - aiogram.event - INFO - Update id=716503530 is handled. Duration 1067 ms by bot id=8208519993
+2025-09-18 09:29:26,537 - root - INFO - Deleted message from 1242411596 in -1002070409550: reklama xabarlar taqiqlanadi
+2025-09-18 09:29:26,537 - aiogram.event - INFO - Update id=716503528 is handled. Duration 1100 ms by bot id=8208519993
+2025-09-18 09:29:26,569 - aiogram.event - INFO - Update id=716503539 is handled. Duration 1131 ms by bot id=8208519993
+2025-09-18 09:29:33,650 - root - INFO - Deleted message from 1242411596 in -1002070409550: reklama xabarlar taqiqlanadi
+2025-09-18 09:29:33,650 - aiogram.event - INFO - Update id=716503533 is handled. Duration 8213 ms by bot id=8208519993
+2025-09-18 09:29:33,696 - root - INFO - Deleted message from 5403516004 in -1002070409550: reklama xabarlar taqiqlanadi
+2025-09-18 09:29:33,697 - aiogram.event - INFO - Update id=716503523 is handled. Duration 8262 ms by bot id=8208519993
+2025-09-18 09:29:33,732 - root - INFO - Deleted message from 1948897525 in -1002070409550: reklama xabarlar taqiqlanadi
+2025-09-18 09:29:33,732 - aiogram.event - INFO - Update id=716503553 is handled. Duration 8292 ms by bot id=8208519993
+2025-09-18 09:29:33,774 - root - INFO - Deleted message from 1358124915 in -1002070409550: reklama xabarlar taqiqlanadi
+2025-09-18 09:29:33,775 - aiogram.event - INFO - Update id=716503512 is handled. Duration 8342 ms by bot id=8208519993
+2025-09-18 09:29:33,829 - root - INFO - Deleted message from 1242411596 in -1002070409550: reklama xabarlar taqiqlanadi
+2025-09-18 09:29:33,830 - aiogram.event - INFO - Update id=716503526 is handled. Duration 8394 ms by bot id=8208519993
+2025-09-18 09:29:33,832 - root - ERROR - Error deleting message: Telegram server says - Flood control exceeded on method 'SendMessage' in chat -1002070409550. Retry in 5 seconds.
+Original description: Too Many Requests: retry after 5
+(background on this error at: https://core.telegram.org/bots/faq#my-bot-is-hitting-limits-how-do-i-avoid-this)
+2025-09-18 09:29:33,833 - aiogram.event - INFO - Update id=716503550 is handled. Duration 8393 ms by bot id=8208519993
+2025-09-18 09:29:35,654 - aiogram.event - INFO - Update id=716503562 is handled. Duration 169 ms by bot id=8208519993
+2025-09-18 09:30:20,172 - root - INFO - Found mentions in message: ['moobeanov', 'bekpulatov_kamol', 'moobeanov', 'bekpulatov_kamol']
+2025-09-18 09:30:20,175 - root - INFO - Checking mention @moobeanov: in_group=True
+2025-09-18 09:30:20,177 - root - INFO - Checking mention @bekpulatov_kamol: in_group=True
+2025-09-18 09:30:20,179 - root - INFO - Checking mention @moobeanov: in_group=True
+2025-09-18 09:30:20,182 - root - INFO - Checking mention @bekpulatov_kamol: in_group=True
+2025-09-18 09:30:20,182 - aiogram.event - INFO - Update id=716503563 is handled. Duration 156 ms by bot id=8208519993
+2025-09-18 09:30:41,138 - aiogram.event - INFO - Update id=716503564 is handled. Duration 141 ms by bot id=8208519993
+2025-09-18 09:31:07,170 - aiogram.event - INFO - Update id=716503565 is handled. Duration 139 ms by bot id=8208519993
+2025-09-18 09:31:10,258 - aiogram.event - INFO - Update id=716503566 is handled. Duration 155 ms by bot id=8208519993
+2025-09-18 09:31:22,874 - root - INFO - Found mentions in message: ['pdpuniversity']
+2025-09-18 09:31:22,877 - root - INFO - Checking mention @pdpuniversity: in_group=False
+2025-09-18 09:31:23,022 - root - INFO - Username @pdpuniversity looks valid but cannot be verified - allowing mention
+2025-09-18 09:31:23,023 - root - INFO - User @pdpuniversity verified in chat, adding to database
+2025-09-18 09:31:23,028 - root - INFO - Added username @pdpuniversity to database with temp ID 1956738484
+2025-09-18 09:31:23,029 - aiogram.event - INFO - Update id=716503567 is handled. Duration 330 ms by bot id=8208519993
+2025-09-18 09:31:24,689 - aiogram.event - INFO - Update id=716503568 is handled. Duration 145 ms by bot id=8208519993
+2025-09-18 09:31:31,588 - root - INFO - Found mentions in message: ['baxtiyorov077']
+2025-09-18 09:31:31,590 - root - INFO - Checking mention @baxtiyorov077: in_group=True
+2025-09-18 09:31:31,590 - aiogram.event - INFO - Update id=716503569 is handled. Duration 143 ms by bot id=8208519993
+2025-09-18 09:31:37,887 - aiogram.dispatcher - WARNING - Received SIGINT signal
+2025-09-18 09:31:37,888 - aiogram.dispatcher - INFO - Polling stopped for bot @PDP_adminbot id=8208519993 - 'PDP Group Admin'
+2025-09-18 09:31:37,888 - aiogram.dispatcher - INFO - Polling stopped
+2025-09-18 09:31:38,141 - __main__ - INFO - Bot shutdown completed
+2025-09-18 09:31:38,141 - __main__ - INFO - Bot shutdown completed
+2025-09-18 09:40:29,944 - __main__ - ERROR - Failed to initialize bot: no such column: is_verified
+2025-09-18 09:40:29,945 - __main__ - ERROR - Critical error: no such column: is_verified
+2025-09-18 09:40:29,945 - __main__ - INFO - Bot shutdown completed
+2025-09-18 09:40:43,563 - __main__ - INFO - Database initialized successfully
+2025-09-18 09:40:52,159 - __main__ - INFO - Bot shutdown completed
+2025-09-18 09:41:22,980 - __main__ - INFO - Database initialized successfully
+2025-09-18 09:41:23,627 - __main__ - INFO - Bot initialized: @PDP_adminbot
+2025-09-18 09:41:23,632 - __main__ - INFO - Bot components initialized successfully
+2025-09-18 09:41:23,632 - __main__ - INFO - Starting bot polling...
+2025-09-18 09:41:23,632 - aiogram.dispatcher - INFO - Start polling
+2025-09-18 09:41:23,775 - aiogram.dispatcher - INFO - Run polling for bot @PDP_adminbot id=8208519993 - 'PDP Group Admin'
+2025-09-18 09:41:24,475 - root - INFO - Found mentions in message: ['shahzodbeeck']
+2025-09-18 09:41:24,476 - root - INFO - Found mentions in message: ['pm_aliyev']
+2025-09-18 09:41:24,477 - aiogram.event - INFO - Update id=716503570 is handled. Duration 523 ms by bot id=8208519993
+2025-09-18 09:41:24,478 - root - INFO - Checking mention @shahzodbeeck: in_group=True
+2025-09-18 09:41:24,478 - aiogram.event - INFO - Update id=716503573 is handled. Duration 523 ms by bot id=8208519993
+2025-09-18 09:41:24,478 - root - INFO - Checking mention @pm_aliyev: in_group=False
+2025-09-18 09:41:24,479 - aiogram.event - INFO - Update id=716503582 is handled. Duration 522 ms by bot id=8208519993
+2025-09-18 09:41:24,484 - aiogram.event - INFO - Update id=716503575 is handled. Duration 529 ms by bot id=8208519993
+2025-09-18 09:41:24,492 - aiogram.event - INFO - Update id=716503572 is handled. Duration 537 ms by bot id=8208519993
+2025-09-18 09:41:24,500 - root - INFO - Found mentions in message: ['reklama']
+2025-09-18 09:41:24,501 - root - INFO - Checking mention @reklama: in_group=False
+2025-09-18 09:41:24,508 - aiogram.event - INFO - Update id=716503578 is handled. Duration 552 ms by bot id=8208519993
+2025-09-18 09:41:24,511 - aiogram.event - INFO - Update id=716503576 is handled. Duration 556 ms by bot id=8208519993
+2025-09-18 09:41:24,514 - aiogram.event - INFO - Update id=716503581 is handled. Duration 557 ms by bot id=8208519993
+2025-09-18 09:41:24,530 - aiogram.event - INFO - Update id=716503580 is handled. Duration 574 ms by bot id=8208519993
+2025-09-18 09:41:24,562 - aiogram.event - INFO - Update id=716503579 is handled. Duration 606 ms by bot id=8208519993
+2025-09-18 09:41:24,794 - root - INFO - Chat -1002070409550 has 989 members
+2025-09-18 09:41:24,794 - root - INFO - Username @pm_aliyev in large group - cautiously allowing but monitoring
+2025-09-18 09:41:24,795 - root - INFO - Username @pm_aliyev is invalid - user not found in group
+2025-09-18 09:41:24,796 - root - INFO - Chat -1002070409550 has 989 members
+2025-09-18 09:41:24,796 - root - INFO - Username @reklama in large group - cautiously allowing but monitoring
+2025-09-18 09:41:24,797 - root - INFO - Username @reklama is invalid - user not found in group
+2025-09-18 09:41:24,942 - root - INFO - Deleted message from 1358124915 in -1002070409550: reklama xabarlar taqiqlanadi
+2025-09-18 09:41:24,942 - aiogram.event - INFO - Update id=716503574 is handled. Duration 987 ms by bot id=8208519993
+2025-09-18 09:41:25,143 - root - INFO - Deleted message from 1948897525 in -1002070409550: @reklama bu guruh a'zosi emas, begona foydalanuvchilarni mention qilish taqiqlanadi
+2025-09-18 09:41:25,144 - aiogram.event - INFO - Update id=716503571 is handled. Duration 1189 ms by bot id=8208519993
+2025-09-18 09:41:25,198 - root - INFO - Deleted message from 5329369703 in -1002070409550: @pm_aliyev bu guruh a'zosi emas, begona foydalanuvchilarni mention qilish taqiqlanadi
+2025-09-18 09:41:25,199 - aiogram.event - INFO - Update id=716503577 is handled. Duration 1243 ms by bot id=8208519993
+2025-09-18 09:42:29,948 - root - INFO - Found mentions in message: ['instagram_sattarovlifts']
+2025-09-18 09:42:29,950 - root - INFO - Checking mention @instagram_sattarovlifts: in_group=False
+2025-09-18 09:42:30,274 - root - INFO - Chat -1002070409550 has 989 members
+2025-09-18 09:42:30,274 - root - INFO - Username @instagram_sattarovlifts in large group - cautiously allowing but monitoring
+2025-09-18 09:42:30,274 - root - INFO - Username @instagram_sattarovlifts is invalid - user not found in group
+2025-09-18 09:42:30,598 - root - INFO - Deleted message from 5403516004 in -1002070409550: @instagram_sattarovlifts bu guruh a'zosi emas, begona foydalanuvchilarni mention qilish taqiqlanadi
+2025-09-18 09:42:30,599 - aiogram.event - INFO - Update id=716503583 is handled. Duration 790 ms by bot id=8208519993
+2025-09-18 09:45:13,979 - aiogram.dispatcher - WARNING - Received SIGINT signal
+2025-09-18 09:45:13,982 - aiogram.dispatcher - INFO - Polling stopped for bot @PDP_adminbot id=8208519993 - 'PDP Group Admin'
+2025-09-18 09:45:13,982 - aiogram.dispatcher - INFO - Polling stopped
+2025-09-18 09:45:14,234 - __main__ - INFO - Bot shutdown completed
+2025-09-18 09:45:14,234 - __main__ - INFO - Bot shutdown completed
+2025-09-18 09:45:21,401 - __main__ - INFO - Database initialized successfully
+2025-09-18 09:45:21,980 - __main__ - INFO - Bot initialized: @PDP_adminbot
+2025-09-18 09:45:21,984 - __main__ - INFO - Bot components initialized successfully
+2025-09-18 09:45:21,985 - __main__ - INFO - Starting bot polling...
+2025-09-18 09:45:21,985 - aiogram.dispatcher - INFO - Start polling
+2025-09-18 09:45:22,127 - aiogram.dispatcher - INFO - Run polling for bot @PDP_adminbot id=8208519993 - 'PDP Group Admin'
+2025-09-18 09:45:28,487 - root - INFO - Found mentions in message: ['pdpuniversity']
+2025-09-18 09:45:28,489 - root - INFO - Checking mention @pdpuniversity: in_group=False
+2025-09-18 09:45:28,895 - root - INFO - Chat -1002070409550 has 989 members
+2025-09-18 09:45:28,895 - root - INFO - Username @pdpuniversity in large group - cautiously allowing but monitoring
+2025-09-18 09:45:28,896 - root - INFO - Username @pdpuniversity is invalid - user not found in group
+2025-09-18 09:45:29,471 - root - INFO - Deleted message from 5403516004 in -1002070409550: @pdpuniversity bu guruh a'zosi emas, begona foydalanuvchilarni mention qilish taqiqlanadi
+2025-09-18 09:45:29,471 - aiogram.event - INFO - Update id=716503584 is handled. Duration 1476 ms by bot id=8208519993
+2025-09-18 09:45:37,034 - root - INFO - Found mentions in message: ['instagram_sattarovlifts']
+2025-09-18 09:45:37,036 - root - INFO - Checking mention @instagram_sattarovlifts: in_group=False
+2025-09-18 09:45:37,360 - root - INFO - Chat -1002070409550 has 989 members
+2025-09-18 09:45:37,360 - root - INFO - Username @instagram_sattarovlifts in large group - cautiously allowing but monitoring
+2025-09-18 09:45:37,361 - root - INFO - Username @instagram_sattarovlifts is invalid - user not found in group
+2025-09-18 09:45:37,759 - root - INFO - Deleted message from 5403516004 in -1002070409550: @instagram_sattarovlifts bu guruh a'zosi emas, begona foydalanuvchilarni mention qilish taqiqlanadi
+2025-09-18 09:45:37,759 - aiogram.event - INFO - Update id=716503585 is handled. Duration 876 ms by bot id=8208519993
+2025-09-18 09:45:48,991 - root - INFO - Found mentions in message: ['instagram_sattarovlifts']
+2025-09-18 09:45:48,995 - root - INFO - Checking mention @instagram_sattarovlifts: in_group=False
+2025-09-18 09:45:49,319 - root - INFO - Chat -1002070409550 has 989 members
+2025-09-18 09:45:49,320 - root - INFO - Username @instagram_sattarovlifts in large group - cautiously allowing but monitoring
+2025-09-18 09:45:49,320 - root - INFO - Username @instagram_sattarovlifts is invalid - user not found in group
+2025-09-18 09:45:49,762 - root - INFO - Deleted message from 5403516004 in -1002070409550: @instagram_sattarovlifts bu guruh a'zosi emas, begona foydalanuvchilarni mention qilish taqiqlanadi
+2025-09-18 09:45:49,762 - aiogram.event - INFO - Update id=716503586 is handled. Duration 899 ms by bot id=8208519993
+2025-09-18 09:47:43,965 - aiogram.dispatcher - WARNING - Received SIGINT signal
+2025-09-18 09:47:43,968 - aiogram.dispatcher - INFO - Polling stopped for bot @PDP_adminbot id=8208519993 - 'PDP Group Admin'
+2025-09-18 09:47:43,968 - aiogram.dispatcher - INFO - Polling stopped
+2025-09-18 09:47:44,220 - __main__ - INFO - Bot shutdown completed
+2025-09-18 09:47:44,220 - __main__ - INFO - Bot shutdown completed
+2025-09-18 09:48:18,007 - __main__ - INFO - Database initialized successfully
+2025-09-18 09:48:18,486 - __main__ - INFO - Bot initialized: @PDP_adminbot
+2025-09-18 09:48:18,489 - __main__ - INFO - Bot components initialized successfully
+2025-09-18 09:48:18,489 - __main__ - INFO - Starting bot polling...
+2025-09-18 09:48:18,489 - aiogram.dispatcher - INFO - Start polling
+2025-09-18 09:48:18,623 - aiogram.dispatcher - INFO - Run polling for bot @PDP_adminbot id=8208519993 - 'PDP Group Admin'
+2025-09-18 09:48:22,179 - aiogram.dispatcher - WARNING - Received SIGINT signal
+2025-09-18 09:48:22,180 - aiogram.dispatcher - INFO - Polling stopped for bot @PDP_adminbot id=8208519993 - 'PDP Group Admin'
+2025-09-18 09:48:22,181 - aiogram.dispatcher - INFO - Polling stopped
+2025-09-18 09:48:22,433 - __main__ - INFO - Bot shutdown completed
+2025-09-18 09:48:22,433 - __main__ - INFO - Bot shutdown completed
+2025-09-18 09:50:08,086 - __main__ - INFO - Database initialized successfully
+2025-09-18 09:50:08,623 - __main__ - INFO - Bot initialized: @PDP_adminbot
+2025-09-18 09:50:08,624 - __main__ - ERROR - Failed to initialize bot: 'BotHandlers' object has no attribute 'handle_member_update'
+2025-09-18 09:50:08,625 - __main__ - ERROR - Critical error: 'BotHandlers' object has no attribute 'handle_member_update'
+2025-09-18 09:50:08,876 - __main__ - INFO - Bot shutdown completed
+2025-09-18 09:50:35,590 - __main__ - INFO - Database initialized successfully
+2025-09-18 09:50:36,486 - __main__ - INFO - Bot initialized: @PDP_adminbot
+2025-09-18 09:50:36,490 - __main__ - INFO - Bot components initialized successfully
+2025-09-18 09:50:36,490 - __main__ - INFO - Starting bot polling...
+2025-09-18 09:50:36,490 - aiogram.dispatcher - INFO - Start polling
+2025-09-18 09:50:36,618 - aiogram.dispatcher - INFO - Run polling for bot @PDP_adminbot id=8208519993 - 'PDP Group Admin'
+2025-09-18 09:50:56,051 - aiogram.dispatcher - WARNING - Received SIGINT signal
+2025-09-18 09:50:56,053 - aiogram.dispatcher - INFO - Polling stopped for bot @PDP_adminbot id=8208519993 - 'PDP Group Admin'
+2025-09-18 09:50:56,053 - aiogram.dispatcher - INFO - Polling stopped
+2025-09-18 09:50:56,305 - __main__ - INFO - Bot shutdown completed
+2025-09-18 09:50:56,305 - __main__ - INFO - Bot shutdown completed
+2025-09-18 09:51:01,194 - __main__ - INFO - Database initialized successfully
+2025-09-18 09:51:01,800 - __main__ - INFO - Bot initialized: @PDP_adminbot
+2025-09-18 09:51:01,805 - __main__ - INFO - Bot components initialized successfully
+2025-09-18 09:51:01,805 - __main__ - INFO - Starting bot polling...
+2025-09-18 09:51:01,805 - aiogram.dispatcher - INFO - Start polling
+2025-09-18 09:51:01,939 - aiogram.dispatcher - INFO - Run polling for bot @PDP_adminbot id=8208519993 - 'PDP Group Admin'
+2025-09-18 09:51:04,542 - root - INFO - Found mentions in message: ['pdpuniversity']
+2025-09-18 09:51:04,544 - root - INFO - Checking mention @pdpuniversity: in_group=False
+2025-09-18 09:51:04,840 - root - INFO - Chat -1002070409550 has 989 members
+2025-09-18 09:51:04,840 - root - INFO - Username @pdpuniversity in large group - cautiously allowing but monitoring
+2025-09-18 09:51:04,840 - root - INFO - Username @pdpuniversity is invalid - user not found in group
+2025-09-18 09:51:05,211 - root - INFO - Deleted message from 5403516004 in -1002070409550: @pdpuniversity bu guruh a'zosi emas, begona foydalanuvchilarni mention qilish taqiqlanadi
+2025-09-18 09:51:05,211 - aiogram.event - INFO - Update id=716503587 is handled. Duration 1073 ms by bot id=8208519993
+2025-09-18 09:51:20,412 - root - INFO - Found mentions in message: ['shakhobbozorov']
+2025-09-18 09:51:20,413 - root - INFO - Checking mention @shakhobbozorov: in_group=True
+2025-09-18 09:51:20,415 - aiogram.event - INFO - Update id=716503588 is handled. Duration 160 ms by bot id=8208519993
+2025-09-18 09:51:30,278 - aiogram.event - INFO - Update id=716503589 is handled. Duration 137 ms by bot id=8208519993
+2025-09-18 09:51:44,811 - root - INFO - Found mentions in message: ['shakhobbozorov']
+2025-09-18 09:51:44,813 - root - INFO - Checking mention @shakhobbozorov: in_group=True
+2025-09-18 09:51:44,813 - aiogram.event - INFO - Update id=716503590 is handled. Duration 133 ms by bot id=8208519993
+2025-09-18 09:51:52,691 - aiogram.event - INFO - Update id=716503591 is handled. Duration 132 ms by bot id=8208519993
+2025-09-18 09:52:25,162 - root - INFO - Found mentions in message: ['pdp_adminbot']
+2025-09-18 09:52:25,164 - root - INFO - Checking mention @pdp_adminbot: in_group=False
+2025-09-18 09:52:25,332 - root - INFO - Found @pdp_adminbot in administrators and added to database
+2025-09-18 09:52:25,332 - root - INFO - User @pdp_adminbot verified in chat, updating database
+2025-09-18 09:52:25,338 - aiogram.event - INFO - Update id=716503592 is handled. Duration 345 ms by bot id=8208519993
+2025-09-18 09:53:16,513 - aiogram.event - INFO - Update id=716503593 is handled. Duration 141 ms by bot id=8208519993

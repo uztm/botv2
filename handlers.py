@@ -69,13 +69,14 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
         )
     
     async def debug_group_command(self, message: Message):
-        """Debug command to show group members - for admin only"""
+        """Debug command to show group members or verify specific user - for admin only"""
         if message.from_user.id != Config.SUPERADMIN_ID:
             await message.answer("❌ Sizda bu buyruqni ishlatish huquqi yo'q!")
             return
         
-        # Ask for group ID
-        if len(message.text.split()) < 2:
+        parts = message.text.split()
+        
+        if len(parts) < 2:
             groups = await self.db.get_all_groups()
             if not groups:
                 await message.answer("❌ Faol guruhlar topilmadi!")
@@ -83,21 +84,79 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
                 
             group_list = "\n".join([f"• {group['title']}: `{group['id']}`" for group in groups[:10]])
             await message.answer(
-                f"📋 **Guruh a'zolarini ko'rish**\n\n"
-                f"Faol guruhlar:\n{group_list}\n\n"
-                f"Foydalanish: `/debug_group GROUP_ID`",
+                f"📋 **Debug Commands**\n\n"
+                f"**Faol guruhlar:**\n{group_list}\n\n"
+                f"**Foydalanish:**\n"
+                f"`/debug_group GROUP_ID` - guruh a'zolarini ko'rish\n"
+                f"`/debug_group GROUP_ID @username` - foydalanuvchini tekshirish",
                 parse_mode="Markdown"
             )
             return
         
         try:
-            group_id = int(message.text.split()[1])
+            group_id = int(parts[1])
             
-            # Get members from database
+            # Check if we need to verify a specific user
+            if len(parts) == 3 and parts[2].startswith('@'):
+                username = parts[2].lstrip('@')
+                await message.answer(f"🔍 **Foydalanuvchi tekshiruvi boshlandi...**\n\nUsername: @{username}\nGuruh: {group_id}")
+                
+                # Check in database first
+                is_in_db = await self.db.is_user_in_group(group_id, username)
+                
+                # Check in Telegram chat
+                try:
+                    member = await self.bot.get_chat_member(group_id, f"@{username}")
+                    if member and member.status not in ['kicked', 'left']:
+                        # User found in chat
+                        if not is_in_db:
+                            # Add to database as verified
+                            await self.db.update_group_member(
+                                group_id,
+                                member.user.id,
+                                member.user.username,
+                                member.user.first_name,
+                                member.user.last_name,
+                                True  # is_verified = True
+                            )
+                        
+                        await message.answer(
+                            f"✅ **Foydalanuvchi topildi!**\n\n"
+                            f"👤 **Ma'lumotlar:**\n"
+                            f"• Username: @{member.user.username or username}\n"
+                            f"• Ism: {member.user.first_name or 'Noma\'lum'}\n"
+                            f"• Familiya: {member.user.last_name or 'Yo\'q'}\n"
+                            f"• ID: `{member.user.id}`\n"
+                            f"• Status: {member.status}\n"
+                            f"• Database'da: {'✅ Ha' if is_in_db else '❌ Yo\'q (endi qo\'shildi)'}\n\n"
+                            f"🎯 **Natija:** @{username} guruhda mavjud va verifikatsiya qilindi!",
+                            parse_mode="Markdown"
+                        )
+                    else:
+                        await message.answer(
+                            f"❌ **Foydalanuvchi topilmadi!**\n\n"
+                            f"• Username: @{username}\n"
+                            f"• Status: {member.status if member else 'Mavjud emas'}\n"
+                            f"• Database'da: {'✅ Ha' if is_in_db else '❌ Yo\'q'}\n\n"
+                            f"🎯 **Natija:** @{username} guruhda mavjud emas yoki chiqib ketgan.",
+                            parse_mode="Markdown"
+                        )
+                except Exception as e:
+                    await message.answer(
+                        f"❌ **Xatolik yuz berdi!**\n\n"
+                        f"• Username: @{username}\n"
+                        f"• Xatolik: `{str(e)[:100]}...`\n"
+                        f"• Database'da: {'✅ Ha' if is_in_db else '❌ Yo\'q'}\n\n"
+                        f"💡 **Sabab:** Username mavjud emas yoki bot huquqlari yetarli emas.",
+                        parse_mode="Markdown"
+                    )
+                return
+            
+            # Show group members (original functionality)
             import aiosqlite
             async with aiosqlite.connect(self.db.db_path) as db:
                 cursor = await db.execute(
-                    '''SELECT user_id, username, first_name, last_name, updated_at 
+                    '''SELECT user_id, username, first_name, last_name, is_verified, updated_at 
                        FROM group_members WHERE group_id = ? 
                        ORDER BY updated_at DESC LIMIT 20''',
                     (group_id,)
@@ -108,10 +167,11 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
                 await message.answer(f"❌ Guruh {group_id} uchun a'zolar topilmadi!")
                 return
             
-            debug_text = f"📋 **Guruh {group_id} a'zolari** ({len(members)} ta)\n\n"
+            verified_count = sum(1 for m in members if m[4])  # is_verified column
+            debug_text = f"📋 **Guruh {group_id} a'zolari** ({len(members)} ta, {verified_count} verifikatsiya qilingan)\n\n"
             
             for i, member in enumerate(members, 1):
-                user_id, username, first_name, last_name, updated_at = member
+                user_id, username, first_name, last_name, is_verified, updated_at = member
                 
                 name = first_name or "No name"
                 if last_name:
@@ -119,8 +179,9 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
                 
                 username_str = f"@{username}" if username else "No username"
                 date_str = updated_at[:10] if updated_at else "Unknown"
+                verified_icon = "✅" if is_verified else "⚠️"
                 
-                debug_text += f"{i}. {name} ({username_str}) - ID: `{user_id}` - {date_str}\n"
+                debug_text += f"{i}. {verified_icon} {name} ({username_str}) - ID: `{user_id}` - {date_str}\n"
             
             await message.answer(debug_text, parse_mode="Markdown")
             
@@ -154,25 +215,27 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
             try:
                 member = await self.bot.get_chat_member(message.chat.id, message.from_user.id)
                 if member.status in ['administrator', 'creator']:
-                    # Even for admins, update their info in database
+                    # Even for admins, update their info in database as verified
                     await self.db.update_group_member(
                         message.chat.id,
                         message.from_user.id,
                         message.from_user.username,
                         message.from_user.first_name,
-                        message.from_user.last_name
+                        message.from_user.last_name,
+                        True  # is_verified = True for admins
                     )
                     return
             except Exception as e:
                 logging.warning(f"Could not check admin status for user {message.from_user.id}: {e}")
             
-            # Update member info in database
+            # Update member info in database (verified since they sent a message)
             await self.db.update_group_member(
                 message.chat.id,
                 message.from_user.id,
                 message.from_user.username,
                 message.from_user.first_name,
-                message.from_user.last_name
+                message.from_user.last_name,
+                True  # is_verified = True for active members
             )
             
             # Get group settings
@@ -185,17 +248,19 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
                 should_delete = True
                 reason = "guruhda link tarqatish taqiqlanadi"
             
-            # Check for mentions of users not in group
+            # Check for mentions of users not in group (FIXED LOGIC)
             elif message.text or message.caption:
                 mentions = MessageAnalyzer.extract_mentions(message)
                 if mentions:
                     logging.info(f"Found mentions in message: {mentions}")
                     
+                    # Check each mention
+                    invalid_mentions = []
                     for mention in mentions:
                         # Skip very short mentions that are likely invalid
                         if len(mention) < 3:
                             continue
-                            
+                        
                         # Check if mentioned user exists in the group database
                         is_in_group = await self.db.is_user_in_group(message.chat.id, mention)
                         logging.info(f"Checking mention @{mention}: in_group={is_in_group}")
@@ -204,20 +269,29 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
                             # Try to check if user exists in Telegram group (live check)
                             user_exists_in_chat = await self.check_user_in_chat_by_username(message.chat.id, mention)
                             
-                            if not user_exists_in_chat:
-                                # Additional validation - check if username follows Telegram rules
+                            if user_exists_in_chat:
+                                # User exists in chat and verified - mark as verified in DB
+                                logging.info(f"User @{mention} verified in chat, updating database")
+                                await self.db.mark_user_as_verified(message.chat.id, mention)
+                                # Don't add to invalid mentions since user was found and verified
+                            else:
+                                # User doesn't exist in chat - this is an invalid mention
                                 if self.is_valid_telegram_username(mention):
-                                    should_delete = True
-                                    reason = f"siz belgilagan username guruh azosi emas, begona foydalanuvchilarni mention qilish taqiqlanadi"
-                                    break
+                                    invalid_mentions.append(mention)
+                                    logging.info(f"Username @{mention} is invalid - user not found in group")
                                 else:
                                     # Invalid username format, skip (might be false positive)
                                     logging.info(f"Skipping invalid username format: @{mention}")
                                     continue
-                            else:
-                                # User exists in chat but not in our database, add them
-                                logging.info(f"User @{mention} verified in chat, adding to database")
-                                await self.add_username_to_db(message.chat.id, mention)
+                    
+                    # Only delete if there are actually invalid mentions
+                    if invalid_mentions:
+                        should_delete = True
+                        if len(invalid_mentions) == 1:
+                            reason = f"@{invalid_mentions[0]} bu guruh a'zosi emas, begona foydalanuvchilarni mention qilish taqiqlanadi"
+                        else:
+                            mentioned_users = ", ".join([f"@{user}" for user in invalid_mentions])
+                            reason = f"{mentioned_users} bu guruh a'zolari emas, begona foydalanuvchilarni mention qilish taqiqlanadi"
             
             # Check for potential ads if ad deletion is enabled
             if not should_delete and settings.get('delete_ads', True) and MessageAnalyzer.is_potential_ad(message):
@@ -232,7 +306,8 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
                     
                     warning_msg = await message.answer(f"⚠️ {user_mention}, {reason}!")
                     
-                    # Don't delete warning message - let it stay permanently
+                    # Auto-delete warning after 30 seconds
+                    asyncio.create_task(self.delete_after_delay(warning_msg, 1))
                     logging.info(f"Deleted message from {message.from_user.id} in {message.chat.id}: {reason}")
                     
                 except TelegramBadRequest as e:
@@ -279,12 +354,12 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
         return True
     
     async def check_user_in_chat_by_username(self, chat_id: int, username: str) -> bool:
-        """Check if user with username exists in the chat using multiple methods"""
+        """Check if user with username exists in the chat using multiple methods - RESTRICTIVE APPROACH"""
         try:
             # Remove @ symbol if present
             username = username.lstrip('@').lower()
             
-            # Method 1: Check if user is among chat administrators
+            # Method 1: Check if user is among chat administrators (most reliable)
             try:
                 administrators = await self.bot.get_chat_administrators(chat_id)
                 for admin in administrators:
@@ -296,70 +371,48 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
                             admin.user.id,
                             admin.user.username,
                             admin.user.first_name,
-                            admin.user.last_name
+                            admin.user.last_name,
+                            True  # is_verified = True for admins
                         )
                         logging.info(f"Found @{username} in administrators and added to database")
                         return True
             except Exception as e:
                 logging.warning(f"Could not get administrators for chat {chat_id}: {e}")
             
-            # Method 2: Try to resolve username using Telegram's resolve method
+            # Method 2: Try to get chat member count to assess our verification capabilities
             try:
-                # This is a more restrictive approach - if we can't verify the user exists,
-                # we'll block the mention to prevent spam
-                chat_info = await self.bot.get_chat(chat_id)
+                member_count = await self.bot.get_chat_member_count(chat_id)
+                logging.info(f"Chat {chat_id} has {member_count} members")
                 
-                # Try to get chat member count to see if bot has enough permissions
-                try:
-                    member_count = await self.bot.get_chat_member_count(chat_id)
-                    logging.info(f"Chat {chat_id} has {member_count} members")
-                except Exception:
-                    pass
-                
-                # If username is very short or has special characters, it's likely invalid
-                if len(username) < 5 or not username.replace('_', '').isalnum():
-                    logging.info(f"Username @{username} appears invalid (too short or special chars)")
+                # For small groups, we can be more restrictive since we should know most members
+                # For large groups, we might not have full member data
+                if member_count <= 50:
+                    # Small group - if we can't verify the user, they're probably not there
+                    logging.info(f"Username @{username} could not be verified in small group - blocking mention")
                     return False
-                
-                # For now, if we can't verify through admin list and the username
-                # is not in our database, we'll assume it doesn't exist in the group
-                # This is more restrictive but prevents spam
-                
-                logging.info(f"Username @{username} could not be verified in group - blocking mention")
-                return False
-                
-            except Exception as e:
-                logging.warning(f"Could not verify user @{username}: {e}")
-                return False
+                else:
+                    # Large group - harder to verify all members
+                    # Still be restrictive but allow some edge cases
+                    # Only allow if username follows Telegram rules exactly
+                    if self.is_valid_telegram_username(username) and len(username) >= 5:
+                        logging.info(f"Username @{username} in large group - cautiously allowing but monitoring")
+                        return False  # Still block to be safe - change to True if you want to be more lenient
+                    else:
+                        logging.info(f"Username @{username} appears invalid - blocking")
+                        return False
+                        
+            except Exception:
+                # If we can't get member count, be restrictive
+                pass
+            
+            # Method 3: If all verification methods fail, block the mention
+            logging.info(f"Username @{username} could not be verified in group - blocking mention")
+            return False
             
         except Exception as e:
             logging.warning(f"Could not check user @{username} in chat {chat_id}: {e}")
             # In case of error, be restrictive to prevent spam
             return False
-    
-    async def add_username_to_db(self, chat_id: int, username: str):
-        """Add verified username to database with minimal info"""
-        try:
-            # For usernames that we've verified exist in the group but don't have user_id for,
-            # we'll use a negative number as a placeholder to distinguish from real user_ids
-            import hashlib
-            username_clean = username.lstrip('@').lower()
-            
-            # Create a consistent negative ID based on username hash
-            # This ensures the same username always gets the same ID
-            username_hash = hashlib.md5(f"{chat_id}_{username_clean}".encode()).hexdigest()
-            temp_user_id = -int(username_hash[:8], 16)  # Negative to distinguish from real IDs
-            
-            await self.db.update_group_member(
-                chat_id,
-                temp_user_id,
-                username_clean,
-                f"Verified_{username_clean}",  # Placeholder first name
-                None
-            )
-            logging.info(f"Added verified username @{username_clean} to database with temp ID {temp_user_id}")
-        except Exception as e:
-            logging.warning(f"Could not add username @{username} to database: {e}")
     
     async def handle_member_update(self, chat_member: ChatMemberUpdated):
         """Handle member join/leave events"""
@@ -376,14 +429,6 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
                     chat_member.new_chat_member.user.last_name
                 )
                 logging.info(f"Added/updated user {chat_member.new_chat_member.user.id} in group {chat_member.chat.id}")
-                
-                # Send join message deletion if enabled
-                if settings.get('delete_join_leave', True) and chat_member.from_user.id != self.bot.id:
-                    try:
-                        # This will be handled automatically by checking message content type
-                        pass
-                    except Exception as e:
-                        logging.warning(f"Could not handle join message: {e}")
                 
             elif chat_member.new_chat_member.status in [KICKED, LEFT]:
                 # User left or was kicked

@@ -60,11 +60,11 @@ class MessageAnalyzer:
     
     @staticmethod
     def extract_mentions(message: Message) -> List[str]:
-        """Extract all mentions from message with improved accuracy"""
+        """Extract all mentions from message with improved accuracy - handles mentions anywhere in text"""
         mentions = []
         text = message.text or message.caption or ""
         
-        # Extract from entities (most reliable)
+        # Method 1: Extract from entities (most reliable)
         entities_to_check = []
         if message.entities:
             entities_to_check.extend(message.entities)
@@ -76,19 +76,47 @@ class MessageAnalyzer:
                 mention = text[entity.offset:entity.offset + entity.length]
                 username = mention.lstrip('@').lower()
                 if username and len(username) >= 3:  # Minimum username length
-                    mentions.append(username)
+                    if username not in mentions:  # Avoid duplicates
+                        mentions.append(username)
         
-        # Extract with regex as fallback (but be more careful)
-        # Only look for mentions that look like valid usernames
-        mention_pattern = r'@([a-zA-Z][a-zA-Z0-9_]{2,31})'  # Valid Telegram username pattern
-        regex_mentions = re.findall(mention_pattern, text)
+        # Method 2: Extract with regex (catches mentions entities might miss)
+        # This handles cases like "some message @username more text"
+        # Valid Telegram username pattern - matches mentions anywhere in text
+        mention_patterns = [
+            # Standard @username pattern
+            r'@([a-zA-Z][a-zA-Z0-9_]{2,31})(?=\s|$|[^\w])',  # Username followed by space, end, or non-word char
+            # Handle cases where @ is at word boundary
+            r'(?<!\w)@([a-zA-Z][a-zA-Z0-9_]{2,31})',  # @ not preceded by word character
+        ]
         
-        for mention in regex_mentions:
-            mention_lower = mention.lower()
-            if mention_lower not in mentions:
-                mentions.append(mention_lower)
+        for pattern in mention_patterns:
+            regex_mentions = re.findall(pattern, text)
+            for mention in regex_mentions:
+                mention_lower = mention.lower()
+                if mention_lower not in mentions:  # Avoid duplicates
+                    mentions.append(mention_lower)
         
-        return mentions
+        # Method 3: Additional cleanup and validation
+        validated_mentions = []
+        for mention in mentions:
+            # Clean and validate each mention
+            clean_mention = mention.strip().lower()
+            
+            # Skip empty or too short mentions
+            if not clean_mention or len(clean_mention) < 3:
+                continue
+                
+            # Skip mentions with invalid characters
+            if not re.match(r'^[a-zA-Z][a-zA-Z0-9_]*$', clean_mention):
+                continue
+                
+            # Skip if too long (Telegram max is 32 chars)
+            if len(clean_mention) > 32:
+                continue
+                
+            validated_mentions.append(clean_mention)
+        
+        return validated_mentions
     
     @staticmethod
     def is_potential_ad(message: Message) -> bool:

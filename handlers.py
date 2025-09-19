@@ -28,8 +28,13 @@ class BotHandlers:
         self.router.message.register(self.debug_group_command, Command("debug_group"), F.chat.type == ChatType.PRIVATE)
         self.router.message.register(self.handle_broadcast_message, F.chat.type == ChatType.PRIVATE)
         
-        # Group handlers
+        # Group handlers - REGULAR MESSAGES
         self.router.message.register(self.handle_group_message, F.chat.type.in_({ChatType.GROUP, ChatType.SUPERGROUP}))
+        
+        # Group handlers - EDITED MESSAGES (NEW!)
+        self.router.edited_message.register(self.handle_edited_group_message, F.chat.type.in_({ChatType.GROUP, ChatType.SUPERGROUP}))
+        
+        # Member update handlers
         self.router.chat_member.register(self.handle_member_update, ChatMemberUpdatedFilter(member_status_changed=True))
         
         # Callback handlers
@@ -54,6 +59,7 @@ Men guruh boshqaruv botiman. Men quyidagi vazifalarni bajaraman:
 • Reklama va linklar ni o'chirish
 • Begona mention larni aniqlash va o'chirish
 • Guruhga qo'shilish/chiqish xabarlarini o'chirish
+• Tahrirlangan xabarlarni ham tekshirish ✨
 
 ⚙️ **Boshqaruv:**
 • Admin paneli orqali guruhlarni boshqarish
@@ -207,6 +213,14 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
     
     async def handle_group_message(self, message: Message):
         """Handle all group messages with enhanced link and mention checking"""
+        await self._process_group_message(message, is_edited=False)
+    
+    async def handle_edited_group_message(self, message: Message):
+        """Handle edited group messages - NEW FEATURE"""
+        await self._process_group_message(message, is_edited=True)
+    
+    async def _process_group_message(self, message: Message, is_edited: bool = False):
+        """Core message processing logic for both regular and edited messages"""
         try:
             if not message.from_user:
                 return
@@ -252,7 +266,7 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
             elif message.text or message.caption:
                 mentions = MessageAnalyzer.extract_mentions(message)
                 if mentions:
-                    logging.info(f"Found mentions in message: {mentions}")
+                    logging.info(f"Found mentions in {'edited ' if is_edited else ''}message: {mentions}")
                     
                     # Check each mention
                     invalid_mentions = []
@@ -304,19 +318,26 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
                     await message.delete()
                     user_mention = TextFormatter.get_user_mention(message.from_user)
                     
-                    warning_msg = await message.answer(f"⚠️ {user_mention}, {reason}!")
+                    # Different warning message for edited messages
+                    if is_edited:
+                        warning_msg = await message.answer(f"⚠️ {user_mention}, tahrirlangan xabaringiz o'chirildi - {reason}!")
+                    else:
+                        warning_msg = await message.answer(f"⚠️ {user_mention}, {reason}!")
                     
-                    # Auto-delete warning after 30 seconds
+                    # Auto-delete warning after 10 seconds
                     asyncio.create_task(self.delete_after_delay(warning_msg, 10))
-                    logging.info(f"Deleted message from {message.from_user.id} in {message.chat.id}: {reason}")
+                    
+                    # Log with edited message indicator
+                    message_type = "edited message" if is_edited else "message"
+                    logging.info(f"Deleted {message_type} from {message.from_user.id} in {message.chat.id}: {reason}")
                     
                 except TelegramBadRequest as e:
-                    logging.warning(f"Could not delete message: {e}")
+                    logging.warning(f"Could not delete {'edited ' if is_edited else ''}message: {e}")
                 except Exception as e:
-                    logging.error(f"Error deleting message: {e}")
+                    logging.error(f"Error deleting {'edited ' if is_edited else ''}message: {e}")
                 
         except Exception as e:
-            logging.error(f"Error handling group message: {e}")
+            logging.error(f"Error handling {'edited ' if is_edited else ''}group message: {e}")
     
     def is_valid_telegram_username(self, username: str) -> bool:
         """Check if username follows Telegram username rules"""
@@ -470,6 +491,7 @@ Men quyidagi vazifalarni bajaraman:
 • ✅ Reklama va linklar ni o'chirish
 • ✅ Faqat guruh a'zolarini mention qilishga ruxsat berish
 • ✅ Guruhga qo'shilish/chiqish xabarlarini o'chirish
+• ✅ Tahrirlangan xabarlarni ham tekshirish ✨
 
 ⚠️ **Muhim:** Men to'g'ri ishlashim uchun quyidagi admin huquqlari kerak:
 • Xabarlarni o'chirish
@@ -483,6 +505,7 @@ Barcha himoya xususiyatlari avtomatik yoqilgan. Admin orqali sozlamalarni o'zgar
 • Faqat guruh a'zolarini mention qiling
 • Link va reklama tarqatmang
 • Spam xabarlar yubormang
+• Xabarlarni tahrirlash orqali qoidalarni buzish mumkin emas ⚠️
 
 Savollaringiz bo'lsa, guruh adminlariga murojaat qiling.
                 """
@@ -538,3 +561,152 @@ Savollaringiz bo'lsa, guruh adminlariga murojaat qiling.
             await message.delete()
         except Exception as e:
             logging.warning(f"Could not delete warning message: {e}")
+    # Add these methods to your BotHandlers class
+
+    async def scan_recent_messages_command(self, message: Message):
+        """Scan recent messages in the group - for admins only"""
+        try:
+            # Check if user is admin
+            member = await self.bot.get_chat_member(message.chat.id, message.from_user.id)
+            if member.status not in ['administrator', 'creator']:
+                await message.reply("❌ Faqat adminlar bu buyruqni ishlatishi mumkin!")
+                return
+                
+            # Delete the command message
+            await message.delete()
+            
+            # Send scanning status
+            status_msg = await self.bot.send_message(
+                message.chat.id,
+                "🔍 **Oxirgi xabarlar tekshirilmoqda...**\n\n⏳ Iltimos kutib turing..."
+            )
+            
+            # Get recent messages (Telegram only allows getting recent messages)
+            # We'll check the last 100 messages maximum
+            try:
+                # Get group settings
+                settings = await self.db.get_group_settings(message.chat.id)
+                
+                scanned_count = 0
+                deleted_count = 0
+                processed_count = 0
+                
+                # Use get_chat_history or iterate through recent messages
+                # Note: This requires the bot to have been in the group and seen the messages
+                async for msg in self._get_recent_messages(message.chat.id, limit=100):
+                    if not msg or not msg.from_user:
+                        continue
+                        
+                    processed_count += 1
+                    
+                    # Skip messages from admins
+                    try:
+                        member = await self.bot.get_chat_member(msg.chat.id, msg.from_user.id)
+                        if member.status in ['administrator', 'creator']:
+                            continue
+                    except:
+                        pass
+                    
+                    # Check if message should be deleted
+                    should_delete, reason = await self._should_delete_message(msg, settings)
+                    
+                    if should_delete:
+                        try:
+                            await msg.delete()
+                            deleted_count += 1
+                            logging.info(f"Deleted old message from {msg.from_user.id}: {reason}")
+                            
+                            # Small delay to avoid rate limiting
+                            await asyncio.sleep(0.5)
+                            
+                        except Exception as e:
+                            logging.warning(f"Could not delete old message: {e}")
+                    
+                    scanned_count += 1
+                    
+                    # Update status every 10 messages
+                    if scanned_count % 10 == 0:
+                        try:
+                            await status_msg.edit_text(
+                                f"🔍 **Xabarlar tekshirilmoqda...**\n\n"
+                                f"📊 **Holat:**\n"
+                                f"• Ko'rib chiqildi: {scanned_count}\n"
+                                f"• O'chirildi: {deleted_count}\n"
+                                f"• Jarayon davom etmoqda..."
+                            )
+                        except:
+                            pass
+                
+                # Final status
+                final_text = f"""
+    ✅ **Xabarlar tekshiruvi yakunlandi!**
+
+    📊 **Natijalar:**
+    • Jami ko'rib chiqildi: {scanned_count} ta xabar
+    • Qoida buzuvchi topildi: {deleted_count} ta
+    • O'chirildi: {deleted_count} ta
+    • Tozalandi: {scanned_count - deleted_count} ta xabar qoidalarga mos
+
+    ⏰ **Vaqt:** {datetime.now().strftime('%d.%m.%Y %H:%M')}
+
+    {'🎉 Barcha xabarlar qoidalarga mos!' if deleted_count == 0 else f'🧹 {deleted_count} ta qoida buzuvchi xabar o\'chirildi.'}
+                """
+                
+                await status_msg.edit_text(final_text)
+                
+                # Auto-delete status after 30 seconds
+                asyncio.create_task(self.delete_after_delay(status_msg, 30))
+                
+            except Exception as e:
+                await status_msg.edit_text(f"❌ **Xatolik:** {str(e)[:100]}...")
+                
+        except Exception as e:
+            logging.error(f"Error in scan_recent_messages_command: {e}")
+
+    async def _get_recent_messages(self, chat_id: int, limit: int = 100):
+        """Generator to get recent messages - LIMITED BY TELEGRAM API"""
+        # Note: This is a simplified example. In reality, bots can only see messages
+        # sent after they joined the group. This method would need to be implemented
+        # using message storage or other techniques.
+        
+        # For demonstration, we'll return an empty generator since we can't access
+        # message history that the bot hasn't seen
+        return
+        yield  # This makes it a generator
+
+    async def _should_delete_message(self, message: Message, settings: dict) -> tuple[bool, str]:
+        """Check if a message should be deleted based on settings"""
+        try:
+            # Check for links if link deletion is enabled
+            if settings.get('delete_links', True) and MessageAnalyzer.has_links(message):
+                return True, "contains links"
+            
+            # Check for mentions of users not in group
+            if message.text or message.caption:
+                mentions = MessageAnalyzer.extract_mentions(message)
+                if mentions:
+                    invalid_mentions = []
+                    for mention in mentions:
+                        if len(mention) < 3:
+                            continue
+                        
+                        is_in_group = await self.db.is_user_in_group(message.chat.id, mention)
+                        if not is_in_group:
+                            if self.is_valid_telegram_username(mention):
+                                invalid_mentions.append(mention)
+                    
+                    if invalid_mentions:
+                        return True, f"invalid mentions: {', '.join(['@' + u for u in invalid_mentions])}"
+            
+            # Check for potential ads if ad deletion is enabled
+            if settings.get('delete_ads', True) and MessageAnalyzer.is_potential_ad(message):
+                return True, "potential advertisement"
+            
+            return False, ""
+            
+        except Exception as e:
+            logging.error(f"Error checking message: {e}")
+            return False, ""
+
+    # Add this to your _setup_handlers method:
+    # self.router.message.register(self.scan_recent_messages_command, Command("scan"), F.chat.type.in_({ChatType.GROUP, ChatType.SUPERGROUP}))

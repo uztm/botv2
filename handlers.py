@@ -219,8 +219,11 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
         """Handle edited group messages - NEW FEATURE"""
         await self._process_group_message(message, is_edited=True)
     
+    # EMERGENCY FIX: Add this to your handlers.py to temporarily disable ad detection
+# and add detailed logging to see what's happening
+
     async def _process_group_message(self, message: Message, is_edited: bool = False):
-        """Core message processing logic for both regular and edited messages"""
+        """Core message processing logic for both regular and edited messages - WITH DEBUG"""
         try:
             if not message.from_user:
                 return
@@ -257,16 +260,21 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
             should_delete = False
             reason = ""
             
+            # DEBUG: Log the message content for analysis
+            text_preview = (message.text or message.caption or "")[:100]
+            logging.info(f"🔍 ANALYZING MESSAGE from {message.from_user.id}: '{text_preview}'")
+            
             # Check for links if link deletion is enabled
             if settings.get('delete_links', True) and MessageAnalyzer.has_links(message):
                 should_delete = True
                 reason = "guruhda link tarqatish taqiqlanadi"
+                logging.info(f"🔗 LINK DETECTED in message: '{text_preview}'")
             
             # Check for mentions of users not in group (FIXED LOGIC)
             elif message.text or message.caption:
                 mentions = MessageAnalyzer.extract_mentions(message)
                 if mentions:
-                    logging.info(f"Found mentions in {'edited ' if is_edited else ''}message: {mentions}")
+                    logging.info(f"👥 Found mentions in {'edited ' if is_edited else ''}message: {mentions}")
                     
                     # Check each mention
                     invalid_mentions = []
@@ -277,7 +285,7 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
                         
                         # Check if mentioned user exists in the group database
                         is_in_group = await self.db.is_user_in_group(message.chat.id, mention)
-                        logging.info(f"Checking mention @{mention}: in_group={is_in_group}")
+                        logging.info(f"📋 Checking mention @{mention}: in_database={is_in_group}")
                         
                         if not is_in_group:
                             # Try to check if user exists in Telegram group (live check)
@@ -285,17 +293,17 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
                             
                             if user_exists_in_chat:
                                 # User exists in chat and verified - mark as verified in DB
-                                logging.info(f"User @{mention} verified in chat, updating database")
+                                logging.info(f"✅ User @{mention} verified in chat, updating database")
                                 await self.db.mark_user_as_verified(message.chat.id, mention)
                                 # Don't add to invalid mentions since user was found and verified
                             else:
                                 # User doesn't exist in chat - this is an invalid mention
                                 if self.is_valid_telegram_username(mention):
                                     invalid_mentions.append(mention)
-                                    logging.info(f"Username @{mention} is invalid - user not found in group")
+                                    logging.info(f"❌ Username @{mention} is invalid - user not found in group")
                                 else:
                                     # Invalid username format, skip (might be false positive)
-                                    logging.info(f"Skipping invalid username format: @{mention}")
+                                    logging.info(f"⚠️ Skipping invalid username format: @{mention}")
                                     continue
                     
                     # Only delete if there are actually invalid mentions
@@ -307,10 +315,33 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
                             mentioned_users = ", ".join([f"@{user}" for user in invalid_mentions])
                             reason = f"{mentioned_users} bu guruh a'zolari emas, begona foydalanuvchilarni mention qilish taqiqlanadi"
             
+            # TEMPORARILY DISABLE AD CHECKING - COMMENT OUT THE LINES BELOW
             # Check for potential ads if ad deletion is enabled
-            if not should_delete and settings.get('delete_ads', True) and MessageAnalyzer.is_potential_ad(message):
-                should_delete = True
-                reason = "reklama xabarlar taqiqlanadi"
+            if not should_delete and settings.get('delete_ads', True):
+                # DEBUG: Test ad detection with detailed logging
+                logging.info(f"🧪 TESTING AD DETECTION for message: '{text_preview}'")
+                
+                # Test with the old method to see why it's triggering
+                is_ad_old = MessageAnalyzer.is_potential_ad(message)
+                logging.info(f"📊 Old AD detection result: {is_ad_old}")
+                
+                if is_ad_old:
+                    # Get debug info if available
+                    if hasattr(MessageAnalyzer, 'is_potential_ad_debug'):
+                        is_ad_debug, debug_reason, debug_score = MessageAnalyzer.is_potential_ad_debug(message)
+                        logging.info(f"🔍 AD DEBUG: is_ad={is_ad_debug}, reason='{debug_reason}', score={debug_score}")
+                    
+                    should_delete = True
+                    reason = "reklama xabarlar taqiqlanadi"
+                    logging.info(f"🚫 MESSAGE FLAGGED AS AD: '{text_preview}' - REASON: {debug_reason if 'debug_reason' in locals() else 'Unknown'}")
+                else:
+                    logging.info(f"✅ Message passed ad detection: '{text_preview}'")
+            
+            # EMERGENCY DISABLE: Uncomment the line below to completely disable ad checking
+            # if reason == "reklama xabarlar taqiqlanadi":
+            #     should_delete = False
+            #     reason = ""
+            #     logging.info(f"🚨 AD DETECTION TEMPORARILY DISABLED - Would have deleted: '{text_preview}'")
             
             # Delete message if needed
             if should_delete:
@@ -327,17 +358,122 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
                     # Auto-delete warning after 10 seconds
                     asyncio.create_task(self.delete_after_delay(warning_msg, 10))
                     
-                    # Log with edited message indicator
+                    # Enhanced logging
                     message_type = "edited message" if is_edited else "message"
-                    logging.info(f"Deleted {message_type} from {message.from_user.id} in {message.chat.id}: {reason}")
+                    logging.info(f"🗑️ DELETED {message_type} from {message.from_user.id} ({message.from_user.username or 'no_username'}) in {message.chat.id}: {reason}")
+                    logging.info(f"📝 DELETED MESSAGE CONTENT: '{text_preview}'")
                     
                 except TelegramBadRequest as e:
                     logging.warning(f"Could not delete {'edited ' if is_edited else ''}message: {e}")
                 except Exception as e:
                     logging.error(f"Error deleting {'edited ' if is_edited else ''}message: {e}")
-                
+            else:
+                # Log that message was allowed
+                logging.info(f"✅ Message ALLOWED: '{text_preview}'")
+                    
         except Exception as e:
             logging.error(f"Error handling {'edited ' if is_edited else ''}group message: {e}")
+
+
+    # QUICK DIAGNOSTIC COMMAND - Add this to test what's happening
+    async def diagnostic_command(self, message: Message):
+        """Diagnostic command to see bot status - for superadmin only"""
+        if message.from_user.id != Config.SUPERADMIN_ID:
+            await message.answer("❌ Access denied!")
+            return
+        
+        # Get bot status
+        groups = await self.db.get_all_groups()
+        
+        diagnostic_text = f"""
+    🔍 **BOT DIAGNOSTIC REPORT**
+
+    📊 **Database Status:**
+    • Groups in DB: {len(groups)}
+    • Groups list: {[g['title'][:20] for g in groups[:5]]}
+
+    🛡️ **Protection Status:**
+    • Link detection: {'✅ ON' if True else '❌ OFF'}
+    • Ad detection: {'✅ ON' if True else '❌ OFF'}  
+    • Mention validation: {'✅ ON' if True else '❌ OFF'}
+
+    🤖 **Bot Info:**
+    • Username: @{Config.BOT_USERNAME}
+    • Superadmin: {Config.SUPERADMIN_ID}
+
+    ⚙️ **Utils Methods Available:**
+    • has_links: {'✅' if hasattr(MessageAnalyzer, 'has_links') else '❌'}
+    • extract_mentions: {'✅' if hasattr(MessageAnalyzer, 'extract_mentions') else '❌'}
+    • is_potential_ad: {'✅' if hasattr(MessageAnalyzer, 'is_potential_ad') else '❌'}
+    • is_potential_ad_debug: {'✅' if hasattr(MessageAnalyzer, 'is_potential_ad_debug') else '❌'}
+
+    💡 **Quick Actions:**
+    • Send /test_ad with text to test ad detection
+    • Send /disable_ads to temporarily disable ad checking
+    • Send /enable_ads to re-enable ad checking
+        """
+        
+        await message.answer(diagnostic_text, parse_mode="Markdown")
+
+
+    # TEST COMMANDS
+    async def test_ad_command(self, message: Message):
+        """Test ad detection on given text"""
+        if message.from_user.id != Config.SUPERADMIN_ID:
+            return
+        
+        test_text = message.text.replace('/test_ad', '').strip()
+        if not test_text:
+            await message.answer("Usage: /test_ad Your message text here")
+            return
+        
+        # Create a fake message object for testing
+        class FakeMessage:
+            def __init__(self, text):
+                self.text = text
+                self.caption = None
+                self.entities = None
+                self.caption_entities = None
+        
+        fake_msg = FakeMessage(test_text)
+        
+        # Test ad detection
+        is_ad = MessageAnalyzer.is_potential_ad(fake_msg)
+        
+        if hasattr(MessageAnalyzer, 'is_potential_ad_debug'):
+            is_ad_debug, debug_reason, debug_score = MessageAnalyzer.is_potential_ad_debug(fake_msg)
+            result = f"""
+    🧪 **AD DETECTION TEST**
+
+    📝 **Text:** `{test_text[:100]}{'...' if len(test_text) > 100 else ''}`
+
+    📊 **Results:**
+    • Is Ad: {'❌ YES' if is_ad else '✅ NO'}
+    • Debug Score: {debug_score}/3+
+    • Reason: {debug_reason}
+
+    🎯 **Action:** {'🗑️ Would DELETE' if is_ad else '✅ Would ALLOW'}
+            """
+        else:
+            result = f"""
+    🧪 **AD DETECTION TEST**
+
+    📝 **Text:** `{test_text[:100]}{'...' if len(test_text) > 100 else ''}`
+
+    📊 **Results:**
+    • Is Ad: {'❌ YES' if is_ad else '✅ NO'}
+
+    🎯 **Action:** {'🗑️ Would DELETE' if is_ad else '✅ Would ALLOW'}
+
+    ⚠️ **Note:** Debug version not available
+            """
+        
+        await message.answer(result, parse_mode="Markdown")
+
+
+    # Add these to your _setup_handlers method:
+    # self.router.message.register(self.diagnostic_command, Command("diagnostic"), F.chat.type == ChatType.PRIVATE)
+    # self.router.message.register(self.test_ad_command, Command("test_ad"), F.chat.type == ChatType.PRIVATE)
     
     def is_valid_telegram_username(self, username: str) -> bool:
         """Check if username follows Telegram username rules"""

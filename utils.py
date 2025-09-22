@@ -129,21 +129,21 @@ class MessageAnalyzer:
         # Enhanced ad keywords for multiple languages
         ad_keywords = [
             # English
-            'buy', 'sell', 'discount', 'sale', 'promo', 'offer', 'deal', 'cheap', 'free', 
-            'win', 'prize', 'earn money', 'work from home', 'make money', 'business opportunity',
-            'investment', 'profit', 'income', 'cash', 'dollars', 'payment',
+            # 'buy', 'sell', 'discount', 'sale', 'promo', 'offer', 'deal', 'cheap', 'free', 
+            # 'win', 'prize', 'earn money', 'work from home', 'make money', 'business opportunity',
+            # 'investment', 'profit', 'income', 'cash', 'dollars', 'payment',
             
-            # Russian
-            'продам', 'куплю', 'скидка', 'акция', 'реклама', 'заработок', 'деньги',
-            'бизнес', 'доход', 'прибыль', 'инвестиции', 'работа', 'вакансия',
+            # # Russian
+            # 'продам', 'куплю', 'скидка', 'акция', 'реклама', 'заработок', 'деньги',
+            # 'бизнес', 'доход', 'прибыль', 'инвестиции', 'работа', 'вакансия',
             
-            # Uzbek
-            'sotib olaman', 'sotaman', 'chegirma', 'aksiya', 'reklama', 'daromad',
-            'pul', 'biznes', 'ish', 'vakansiya', 'foyda',
+            # # Uzbek
+            # 'sotib olaman', 'sotaman', 'chegirma', 'aksiya', 'reklama', 'daromad',
+            # 'pul', 'biznes', 'ish', 'vakansiya', 'foyda',
             
-            # Common spam phrases
-            'click here', 'limited time', 'act now', 'special offer', 'guarantee',
-            'no risk', 'free trial', 'instant', 'urgent', 'exclusive',
+            # # Common spam phrases
+            # 'click here', 'limited time', 'act now', 'special offer', 'guarantee',
+            # 'no risk', 'free trial', 'instant', 'urgent', 'exclusive',
         ]
         
         # Check for ad keywords
@@ -154,12 +154,7 @@ class MessageAnalyzer:
                 if keyword_count >= 2:  # Multiple ad keywords = more likely spam
                     return True
         
-        # Check for excessive emoji usage (potential spam indicator)
-        if len(text) > 10:
-            emoji_count = sum(1 for char in text if ord(char) > 127)
-            emoji_ratio = emoji_count / len(text)
-            if emoji_ratio > 0.4:  # More than 40% emojis
-                return True
+       
         
         # Check for excessive caps (shouting = potential spam)
         if len(text) > 20:

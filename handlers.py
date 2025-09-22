@@ -375,57 +375,18 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
         return True
     
     async def check_user_in_chat_by_username(self, chat_id: int, username: str) -> bool:
+        """Check if user with username exists in the chat using multiple methods - RESTRICTIVE APPROACH"""
         try:
             # Remove @ symbol if present
             username = username.lstrip('@').lower()
             
-            logging.info(f"🔍 Verifying username @{username} in chat {chat_id}")
-            
-            # Method 1: Direct verification - try to get the specific user
-            try:
-                logging.info(f"🔍 Attempting direct verification: bot.get_chat_member({chat_id}, '@{username}')")
-                member = await self.bot.get_chat_member(chat_id, f"@{username}")
-                
-                if member and member.status not in ['kicked', 'left']:
-                    # Found user in chat and they're active
-                    logging.info(f"✅ SUCCESS: @{username} found via direct lookup - Status: {member.status}")
-                    
-                    # Add to database as verified
-                    await self.db.update_group_member(
-                        chat_id,
-                        member.user.id,
-                        member.user.username,
-                        member.user.first_name,
-                        member.user.last_name,
-                        True  # is_verified = True
-                    )
-                    
-                    return True
-                else:
-                    logging.info(f"❌ @{username} found but inactive status: {member.status if member else 'None'}")
-                    return False
-                    
-            except Exception as e:
-                error_msg = str(e).lower()
-                logging.info(f"⚠️ Direct lookup failed for @{username}: {e}")
-                
-                # If user not found error, they definitely don't exist
-                if "user not found" in error_msg or "bad request" in error_msg:
-                    logging.info(f"❌ @{username} definitely doesn't exist in chat (API confirmed)")
-                    return False
-                
-                # Other errors might be temporary - continue to other methods
-                logging.info(f"⚠️ API error for @{username}, trying other methods...")
-            
-            # Method 2: Check if user is among chat administrators (most reliable)
+            # Method 1: Check if user is among chat administrators (most reliable)
             try:
                 administrators = await self.bot.get_chat_administrators(chat_id)
                 for admin in administrators:
                     if (admin.user.username and 
                         admin.user.username.lower() == username):
-                        # Found user in administrators
-                        logging.info(f"✅ SUCCESS: @{username} found in administrators")
-                        
+                        # Found user in administrators, add to database
                         await self.db.update_group_member(
                             chat_id,
                             admin.user.id,
@@ -434,157 +395,45 @@ Botni guruhingizga qo'shish uchun pastdagi tugmani bosing va admin huquqlarini b
                             admin.user.last_name,
                             True  # is_verified = True for admins
                         )
+                        logging.info(f"Found @{username} in administrators and added to database")
                         return True
-                        
             except Exception as e:
-                logging.warning(f"⚠️ Could not get administrators for chat {chat_id}: {e}")
+                logging.warning(f"Could not get administrators for chat {chat_id}: {e}")
             
-            # Method 3: Get chat info and decide based on group size and username validity
+            # Method 2: Try to get chat member count to assess our verification capabilities
             try:
                 member_count = await self.bot.get_chat_member_count(chat_id)
-                logging.info(f"📊 Chat {chat_id} has {member_count} members")
+                logging.info(f"Chat {chat_id} has {member_count} members")
                 
-                # Validate username format first
-                if not self.is_valid_telegram_username(username):
-                    logging.info(f"❌ @{username} has invalid username format")
+                # For small groups, we can be more restrictive since we should know most members
+                # For large groups, we might not have full member data
+                if member_count <= 50:
+                    # Small group - if we can't verify the user, they're probably not there
+                    logging.info(f"Username @{username} could not be verified in small group - blocking mention")
                     return False
-                
-                # For different group sizes, use different strategies
-                if member_count <= 200:
-                    # Small/medium group - if we can't find user via API, they're probably not there
-                    logging.info(f"📊 Small/medium group ({member_count} members) - strict verification")
-                    logging.info(f"❌ @{username} not found via API in small group - blocking mention")
-                    return False
-                    
-                elif member_count <= 1000:
-                    # Large group - be more permissive but still careful
-                    logging.info(f"📊 Large group ({member_count} members) - moderate verification")
-                    
-                    # Only allow if username looks very legitimate
-                    if (len(username) >= 5 and 
-                        not username.endswith('_bot') and 
-                        not any(suspicious in username for suspicious in ['spam', 'fake', 'bot', 'admin']) and
-                        self.is_valid_telegram_username(username)):
-                        
-                        logging.info(f"✅ @{username} allowed in large group (looks legitimate)")
-                        # Don't add to DB yet since we can't confirm, but allow mention
-                        return True
+                else:
+                    # Large group - harder to verify all members
+                    # Still be restrictive but allow some edge cases
+                    # Only allow if username follows Telegram rules exactly
+                    if self.is_valid_telegram_username(username) and len(username) >= 5:
+                        logging.info(f"Username @{username} in large group - cautiously allowing but monitoring")
+                        return False  # Still block to be safe - change to True if you want to be more lenient
                     else:
-                        logging.info(f"❌ @{username} blocked - looks suspicious or too short")
+                        logging.info(f"Username @{username} appears invalid - blocking")
                         return False
                         
-                else:
-                    # Very large group (1000+ members) - most permissive
-                    logging.info(f"📊 Very large group ({member_count} members) - permissive verification")
-                    
-                    if (len(username) >= 5 and self.is_valid_telegram_username(username)):
-                        logging.info(f"✅ @{username} allowed in very large group")
-                        return True
-                    else:
-                        logging.info(f"❌ @{username} blocked - invalid format or too short")
-                        return False
-                            
-            except Exception as e:
-                logging.warning(f"⚠️ Could not get member count for chat {chat_id}: {e}")
-                # If we can't get member count, be conservative
-                if self.is_valid_telegram_username(username) and len(username) >= 5:
-                    logging.info(f"⚠️ Unknown group size - allowing @{username} (valid format)")
-                    return True
-                else:
-                    logging.info(f"❌ Unknown group size - blocking @{username} (to be safe)")
-                    return False
-        
+            except Exception:
+                # If we can't get member count, be restrictive
+                pass
+            
+            # Method 3: If all verification methods fail, block the mention
+            logging.info(f"Username @{username} could not be verified in group - blocking mention")
+            return False
+            
         except Exception as e:
-            logging.error(f"❌ Critical error checking user @{username} in chat {chat_id}: {e}")
-            # In case of critical error, allow mention to avoid false positives
-            return True
-
-
-    # async def debug_user_command(self, message: Message):
-    #     """Debug command to manually test user verification - for superadmin only"""
-    #     if message.from_user.id != Config.SUPERADMIN_ID:
-    #         await message.answer("❌ Sizda bu buyruqni ishlatish huquqi yo'q!")
-    #         return
-        
-    #     parts = message.text.split()
-        
-    #     if len(parts) != 3:
-    #         await message.answer(
-    #             "❌ **Noto'g'ri format!**\n\n"
-    #             "**To'g'ri format:**\n"
-    #             "`/debug_user GROUP_ID @username`\n\n"
-    #             "**Misol:**\n"
-    #             "`/debug_user -1002070409550 @k_ham1dov`",
-    #             parse_mode="Markdown"
-    #         )
-    #         return
-        
-    #     try:
-    #         group_id = int(parts[1])
-    #         username = parts[2].lstrip('@')
-            
-    #         await message.answer(f"🔍 **Foydalanuvchi tekshiruvi boshlandi...**\n\nUsername: @{username}\nGuruh: `{group_id}`", parse_mode="Markdown")
-            
-    #         # Test the verification method step by step
-    #         result_text = f"🔍 **Detalli tekshiruv natijasi:**\n\nUsername: @{username}\nGuruh ID: `{group_id}`\n\n"
-            
-    #         # Step 1: Check in database first
-    #         is_in_db = await self.db.is_user_in_group(group_id, username)
-    #         result_text += f"**1. Database tekshiruvi:**\n{'✅ Topildi' if is_in_db else '❌ Topilmadi'}\n\n"
-            
-    #         # Step 2: Test our verification method
-    #         verification_start = time.time()
-    #         is_verified = await self.check_user_in_chat_by_username(group_id, username)
-    #         verification_time = time.time() - verification_start
-            
-    #         result_text += f"**2. Live tekshiruv:**\n"
-    #         result_text += f"• Natija: {'✅ Tasdiqlandi' if is_verified else '❌ Rad etildi'}\n"
-    #         result_text += f"• Vaqt: {verification_time:.2f} soniya\n\n"
-            
-    #         # Step 3: Try direct API call
-    #         try:
-    #             direct_member = await self.bot.get_chat_member(group_id, f"@{username}")
-    #             result_text += f"**3. Direct API qo'ng'irog'i:**\n"
-    #             result_text += f"• Status: {direct_member.status}\n"
-    #             result_text += f"• User ID: `{direct_member.user.id}`\n"
-    #             result_text += f"• Ism: {direct_member.user.first_name}\n"
-    #             result_text += f"• Active: {'✅ Ha' if direct_member.status not in ['kicked', 'left'] else '❌ Yo\\'q'}\n\n"
-    #         except Exception as e:
-    #             result_text += f"**3. Direct API qo'ng'irog'i:**\n❌ Xatolik: `{str(e)[:50]}...`\n\n"
-            
-    #         # Step 4: Check group info
-    #         try:
-    #             member_count = await self.bot.get_chat_member_count(group_id)
-    #             result_text += f"**4. Guruh ma'lumotlari:**\n"
-    #             result_text += f"• A'zolar soni: {member_count}\n"
-    #             result_text += f"• Kategoriya: "
-    #             if member_count <= 200:
-    #                 result_text += "Kichik/O'rta guruh\n"
-    #             elif member_count <= 1000:
-    #                 result_text += "Katta guruh\n"
-    #             else:
-    #                 result_text += "Juda katta guruh\n"
-    #         except Exception as e:
-    #             result_text += f"**4. Guruh ma'lumotlari:**\n❌ Xatolik: `{str(e)[:50]}...`\n"
-            
-    #         result_text += f"\n**🎯 Yakuniy qaror:**\n"
-    #         if is_verified:
-    #             result_text += f"✅ @{username} mention qilish uchun **RUXSAT BERILADI**\n"
-    #             result_text += f"💡 Sabab: Foydalanuvchi guruhda mavjud yoki tekshiruv o'tdi"
-    #         else:
-    #             result_text += f"❌ @{username} mention qilish **TAQIQLANADI**\n"
-    #             result_text += f"💡 Sabab: Foydalanuvchi guruhda topilmadi yoki shubhali"
-            
-    #         await message.answer(result_text, parse_mode="Markdown")
-            
-    #     except ValueError:
-    #         await message.answer("❌ Noto'g'ri guruh ID formati!")
-    #     except Exception as e:
-    #         await message.answer(f"❌ Xatolik: `{str(e)}`", parse_mode="Markdown")
-
-
-# Add this to your _setup_handlers method:
-# self.router.message.register(self.debug_user_command, Command("debug_user"), F.chat.type == ChatType.PRIVATE)
+            logging.warning(f"Could not check user @{username} in chat {chat_id}: {e}")
+            # In case of error, be restrictive to prevent spam
+            return False
     
     async def handle_member_update(self, chat_member: ChatMemberUpdated):
         """Handle member join/leave events"""

@@ -31,3 +31,4 @@ Thumbs.db
 # IDE/editor configs
 .vscode/
 .idea/
+.evn
